@@ -19,13 +19,47 @@
 
 
 int main() {
-    herencia();
+    funcionesVirtuales();
     return 0;
+}
+
+class Padre {
+public:
+    virtual std::string_view getNombre() const { return "Padre"; }
+};
+
+class Derivada: public Padre {
+public:
+    virtual std::string_view getNombre() const { return "Derivada"; }
+};
+
+void funcionesVirtuales() {
+    //Resuelve a la versión mas derivada que exista de la función
+    Derivada derivada;
+    Padre& padre { derivada };
+
+    std::cout << padre.getNombre() << std::endl;
+}
+
+void punteroClasePadre() {
+    Guerrero guerrero{ "Name", 10 };
+    Personaje& personajeRef { guerrero };
+    Personaje* personaje { &guerrero };
+
+    std::cout << guerrero.getNombre() << std::endl;
 }
 
 void herencia() {
     Guerrero guerrero{ "Name", 10 };
     std::cout << guerrero.getNombre() << std::endl;
+
+    /*
+     Internamente la herencia se implementa mediante composición.
+     guerrero
+        Personaje
+            nombre
+        puntos
+     */
 }
 
 ClaseConCopiaProfunda funcionCopiaProfunda(ClaseConCopiaProfunda clase) {

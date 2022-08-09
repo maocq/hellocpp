@@ -65,5 +65,7 @@ void claseConCopiaSuperficialError();
 void claseConCopiaSuperficial();
 void claseConCopiaProfunda();
 void herencia();
+void punteroClasePadre();
+void funcionesVirtuales();
 
 #endif //HELLOCPP_TEMAS_H
