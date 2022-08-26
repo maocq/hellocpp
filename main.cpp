@@ -19,8 +19,32 @@
 
 
 int main() {
-    funcionesVirtuales();
+    funcionesVirtualesPuras();
     return 0;
+}
+
+class PadreFVPura {
+public:
+    virtual int getValorM() const = 0;
+};
+
+//Implementación predeterminada
+int PadreFVPura::getValorM() const { return 1; }
+
+class DerivadaFVPura: public PadreFVPura {
+public:
+    int getValorM() const override {
+        //return PadreFVPura::getValorM(); //Si queremos usar la implementación predeterminada
+        return 9;
+    }
+};
+
+void funcionesVirtualesPuras() {
+    //PadreFVPura padre; Error compilación, es una clase abstracta
+    DerivadaFVPura derivada;
+    PadreFVPura& padre { derivada };
+
+    std::cout << padre.getValorM() << std::endl; // 9
 }
 
 class Padre {
@@ -30,7 +54,7 @@ public:
 
 class Derivada: public Padre {
 public:
-    virtual std::string_view getNombre() const { return "Derivada"; }
+    std::string_view getNombre() const override { return "Derivada"; }
 };
 
 void funcionesVirtuales() {

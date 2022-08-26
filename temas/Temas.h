@@ -67,5 +67,6 @@ void claseConCopiaProfunda();
 void herencia();
 void punteroClasePadre();
 void funcionesVirtuales();
+void funcionesVirtualesPuras();
 
 #endif //HELLOCPP_TEMAS_H
