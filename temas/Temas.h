@@ -68,5 +68,6 @@ void herencia();
 void punteroClasePadre();
 void funcionesVirtuales();
 void funcionesVirtualesPuras();
+void referenceWrapper();
 
 #endif //HELLOCPP_TEMAS_H

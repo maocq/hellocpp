@@ -19,7 +19,7 @@
 
 
 int main() {
-    funcionesVirtualesPuras();
+    referenceWrapper();
     return 0;
 }
 
@@ -63,6 +63,19 @@ void funcionesVirtuales() {
     Padre& padre { derivada };
 
     std::cout << padre.getNombre() << std::endl;
+}
+
+void referenceWrapper() {
+    Padre padre {};
+    Derivada derivada {};
+
+    //std::vector<Padre&> vecr{}; // (Error compilación) Las referencias no pueden reasignarse, solo inicializarse
+    std::vector<std::reference_wrapper<Padre>> vector{};
+    vector.push_back(padre);
+    vector.push_back(derivada);
+
+    for (const auto& i : vector)
+        std::cout << i.get().getNombre() << std::endl;
 }
 
 void punteroClasePadre() {
