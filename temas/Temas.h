@@ -69,5 +69,6 @@ void punteroClasePadre();
 void funcionesVirtuales();
 void funcionesVirtualesPuras();
 void referenceWrapper();
+void templateClases();
 
 #endif //HELLOCPP_TEMAS_H

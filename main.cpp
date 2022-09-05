@@ -16,11 +16,22 @@
 #include "clases/copiaprofunda/ClaseConCopiaSuperficial.h"
 #include "clases/copiaprofunda/ClaseConCopiaProfunda.h"
 #include "clases/herencia/Guerrero.h"
+#include "clases/MyArray.h"
 
 
 int main() {
-    referenceWrapper();
+    templateClases();
     return 0;
+}
+
+void templateClases() {
+    MyArray<int> intArray{9};
+    MyArray<double> intDouble{9};
+    for (int i{ 0 }; i < intArray.getSize(); ++i)
+        intArray[i] = i * 2;
+
+    for (int i{ intArray.getSize() - 1 }; i >= 0; --i)
+        std::cout << intArray[i] << std::endl;
 }
 
 class PadreFVPura {
