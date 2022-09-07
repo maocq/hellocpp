@@ -70,5 +70,6 @@ void funcionesVirtuales();
 void funcionesVirtualesPuras();
 void referenceWrapper();
 void templateClases();
+void templatesNoTipo();
 
 #endif //HELLOCPP_TEMAS_H

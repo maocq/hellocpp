@@ -20,8 +20,37 @@
 
 
 int main() {
-    templateClases();
+    templatesNoTipo();
     return 0;
+}
+
+template <typename T, int size>
+class ArrayEstatico {
+private:
+    T m_array[size]{};
+public:
+    T* getArray();
+
+    T& operator[](int index) {
+        return m_array[index];
+    }
+};
+
+template<typename T, int size>
+T *ArrayEstatico<T, size>::getArray() {
+    return m_array;
+}
+
+void templatesNoTipo() {
+    constexpr auto size = 3;
+    ArrayEstatico<double, size> doubleArray;
+    std::cout << doubleArray.getArray() << std::endl;
+
+    for (int i{ 0 }; i < size; ++i)
+        doubleArray[i] = 0.1 * i;
+
+    for (int i{ 0 }; i < size; ++i)
+        std::cout << doubleArray[i] << std::endl;
 }
 
 void templateClases() {
