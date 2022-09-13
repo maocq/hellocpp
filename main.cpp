@@ -20,8 +20,64 @@
 
 
 int main() {
-    especializacionConstructorYDestructor();
+    especializacionPlantillasDeClases();
     return 0;
+}
+
+/*
+Operadores Bitwise (Operadores bit a bit)
+    & AND bit a bit
+    | OR bit a bit
+    ^ XOR bit a bit
+    ~ Complemento bit a bit
+    << Desplazamiento a la izquierda bit a bit
+    >> Desplazamiento a la izquierda OR bit a bit
+ */
+
+template <typename T>
+class Wrapper8 {
+private:
+    T m_array[8]{};
+public:
+    void set(int index, const T& value) {
+        m_array[index] = value;
+    }
+
+    const T& get(int index) const {
+        return m_array[index];
+    }
+};
+
+// Especialización clase Wrapper8
+template<>
+class Wrapper8<bool> {
+private:
+    unsigned char m_data{};
+public:
+    void set(int index, bool value) {
+        auto mask{ 1 << index };
+        if (value)
+            m_data |= mask;
+        else
+            m_data &= ~mask;
+    }
+
+    //Podemos usar otros nombres de funciones sin problema ya que se trata de dos clases diferentes
+    bool get(int index) {
+        auto mask{ 1 << index };
+        return (m_data & mask);
+    }
+};
+
+void especializacionPlantillasDeClases() {
+    Wrapper8<int> intWrapper{};
+    intWrapper.set(6, 9);
+    std::cout << intWrapper.get(6) << std::endl;
+
+    Wrapper8<bool > boolWrapper{};
+    boolWrapper.set(6, true);
+    std::cout << std::boolalpha;
+    std::cout << boolWrapper.get(6) << "-" << boolWrapper.get(7) << std::endl;
 }
 
 template <typename T>

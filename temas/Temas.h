@@ -73,5 +73,6 @@ void templateClases();
 void templatesNoTipo();
 void especializacionPlantillas();
 void especializacionConstructorYDestructor();
+void especializacionPlantillasDeClases();
 
 #endif //HELLOCPP_TEMAS_H
