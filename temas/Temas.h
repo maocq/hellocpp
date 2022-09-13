@@ -71,5 +71,7 @@ void funcionesVirtualesPuras();
 void referenceWrapper();
 void templateClases();
 void templatesNoTipo();
+void especializacionPlantillas();
+void especializacionConstructorYDestructor();
 
 #endif //HELLOCPP_TEMAS_H

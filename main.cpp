@@ -20,8 +20,69 @@
 
 
 int main() {
-    templatesNoTipo();
+    especializacionConstructorYDestructor();
     return 0;
+}
+
+template <typename T>
+class WrapperT {
+private:
+    T m_value{};
+public:
+    WrapperT(T value) : m_value(value) {}
+    ~WrapperT() {}; //Necesario para definir destructor especializado
+
+    void print() {
+        std::cout << m_value << std::endl;
+    }
+};
+
+// Especialización de constructor para realizar copia profunda
+template<>
+WrapperT<char*>::WrapperT(char* value) {
+    if (!value) return;
+
+    int size{ 0 };
+    while (value[size] != '\0')
+        ++size;
+    ++size;  // +1 - This array includes the same sequence of characters that make up the value of the string object plus an additional terminating null-character ('\0') at the end.
+
+    m_value = new char[size];
+
+    for (int i = 0; i < size; ++i)
+        m_value[i] = value[i];
+}
+
+// Destructor especializado
+template<>
+WrapperT<char*>::~WrapperT() {
+    delete[] m_value;
+}
+
+// Especialización de función para double
+template<>
+void WrapperT<double>::print() {
+    std::cout << std::scientific << m_value << std::endl;
+}
+
+void especializacionConstructorYDestructor() {
+    std::string  name;
+    std::cout << "Ingrese nombre:";
+    std::cin >> name;
+
+    WrapperT<char*> wrapper(name.data());
+    wrapper.print();
+
+    name.clear();
+    wrapper.print();
+}
+
+void especializacionPlantillas() {
+    WrapperT<int> intValue{ 9 };
+    WrapperT<double> doubleValue{ 9.5 };
+
+    intValue.print();
+    doubleValue.print();
 }
 
 template <typename T, int size>
