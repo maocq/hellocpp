@@ -20,8 +20,48 @@
 
 
 int main() {
-    especializacionPlantillasDeClases();
+    excepcionesCatchAll();
     return 0;
+}
+
+void excepcionesCatchAll() {
+    try {
+        throw -1;
+    } catch (...) {
+        std::cerr << "Error" << std::endl;
+    }
+}
+
+int myFunct(int number) {
+    if (number < 0)
+        throw "Numero menor";
+    return number + 1;
+}
+
+void excepcionesEnFunciones() {
+    try {
+        myFunct(-1);
+    } catch (const char* exception) {
+        std::cerr << "Error " << exception << std::endl;
+    }
+}
+
+void erroresExcepciones() {
+    int value = 9;
+    try {
+        if (value == 9)
+            throw std::string("Bumm!!!");
+            //throw -1;
+
+        std::cout << "Ok" << std::endl;
+    } catch (int n) {
+        std::cerr << "Error " << n << std::endl; // cerr no se almacena en el buffer, ejecución inmediata
+    } catch (const std::string& error) {
+        std::cerr << "Error " << error << std::endl;
+    }
+
+    std::cout << "end." << std::endl;
+    // 'throw' salta al bloque envolvente 'try' mas cercano. try transmitira la excepción a los catch (busca un catch compatible)
 }
 
 /*

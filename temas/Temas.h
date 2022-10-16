@@ -74,5 +74,8 @@ void templatesNoTipo();
 void especializacionPlantillas();
 void especializacionConstructorYDestructor();
 void especializacionPlantillasDeClases();
+void erroresExcepciones();
+void excepcionesEnFunciones();
+void excepcionesCatchAll();
 
 #endif //HELLOCPP_TEMAS_H
