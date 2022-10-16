@@ -20,8 +20,50 @@
 
 
 int main() {
-    excepcionesCatchAll();
+    exceptionesReThrowing();
     return 0;
+}
+
+void exceptionesReThrowing() {
+    try {
+        throw -1;
+    } catch (int exception) {
+        std::cerr << "Error " << std::endl;
+        throw 'z';
+        //throw exception; Relanzar la misma excepción genera una inicialización por copia
+        //Relanzar una excepción capturada desde su tipo padre corta el objeto a solo su tipo padre
+    }
+}
+
+class MyException : public std::exception {
+private:
+    std::string m_error{};
+public:
+    MyException(const std::string_view error) : m_error(error) {}
+
+    const char* what() const noexcept override {
+        return m_error.c_str();
+    }
+    //const std::string& getError() const { return m_error; }
+};
+
+void myException() {
+    try {
+        throw MyException("Bummm!");
+    } catch (const MyException& exception) {
+        std::cerr << "Error " << exception.what() << std::endl;
+    } catch (const std::exception& exception) {
+        std::cerr << "Error general" << exception.what() << std::endl;
+    }
+}
+
+void clasesException() {
+    try {
+        // https://en.cppreference.com/w/cpp/error/exception
+        throw std::runtime_error("Bummm!");
+    } catch (const std::exception& exception) {
+        std::cerr << "Error " << exception.what() << std::endl;
+    }
 }
 
 void excepcionesCatchAll() {

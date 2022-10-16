@@ -77,5 +77,8 @@ void especializacionPlantillasDeClases();
 void erroresExcepciones();
 void excepcionesEnFunciones();
 void excepcionesCatchAll();
+void clasesException();
+void myException();
+void exceptionesReThrowing();
 
 #endif //HELLOCPP_TEMAS_H
