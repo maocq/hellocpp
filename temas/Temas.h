@@ -80,5 +80,6 @@ void excepcionesCatchAll();
 void clasesException();
 void myException();
 void exceptionesReThrowing();
+void punterosInteligentes();
 
 #endif //HELLOCPP_TEMAS_H

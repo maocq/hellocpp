@@ -17,11 +17,42 @@
 #include "clases/copiaprofunda/ClaseConCopiaProfunda.h"
 #include "clases/herencia/Guerrero.h"
 #include "clases/MyArray.h"
+#include "clases/recurso/Recurso.h"
 
 
 int main() {
-    exceptionesReThrowing();
+    punterosInteligentes();
     return 0;
+}
+
+template <typename T>
+class MySmartPtr {
+    T* m_ptr;
+
+public:
+    MySmartPtr(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~MySmartPtr() {
+        delete m_ptr;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+void punterosInteligentes() {
+    /*
+    Recurso* recurso = new Recurso(1);
+    delete recurso;
+    */
+
+    MySmartPtr<Recurso> recurso ( new Recurso(9) );
+    std::cout << recurso->getId() << std::endl;
+
+    /*
+    // Error si se usa constructor por copia
+    MySmartPtr<Recurso> copia ( recurso );
+    // Ver semantica del movimiento
+    */
 }
 
 void exceptionesReThrowing() {
@@ -30,8 +61,12 @@ void exceptionesReThrowing() {
     } catch (int exception) {
         std::cerr << "Error " << std::endl;
         throw 'z';
+
         //throw exception; Relanzar la misma excepción genera una inicialización por copia
         //Relanzar una excepción capturada desde su tipo padre corta el objeto a solo su tipo padre
+        //Lo anterior se soluciona de la siguiente forma:
+
+        //throw;
     }
 }
 
