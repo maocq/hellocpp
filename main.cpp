@@ -21,8 +21,63 @@
 
 
 int main() {
-    punterosInteligentes();
+    semanticaMovimiento();
     return 0;
+}
+
+
+/**
+ RAII: El recurso esta vinculado a la vida útil del objeto que adquirió ese recurso.
+ Semántica de movimiento: Transfiere la propiedad de un objeto a otro
+ */
+
+/*
+    Equivalente a std::auto_ptr de C++ 98 y eliminado en C++17 por problemas en diferencias entre copiar y mover,
+    ejemplo al pasar auto_ptr por valor a una función, al salir de la función se elimina con su valor interno
+
+    Diferencia entre semantica de copia y semantica de movimiento a partir de C++11 (moderno). (Ver arriba)
+*/
+template <typename T>
+class SmartPtrSemMov {
+    T* m_ptr;
+
+public:
+    SmartPtrSemMov(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~SmartPtrSemMov() {
+        delete m_ptr;
+    }
+
+    // Constructor por copia con semántica de movimiento
+    SmartPtrSemMov(SmartPtrSemMov& s) {
+        m_ptr = s.m_ptr;
+        s.m_ptr = nullptr;
+    }
+
+    // Operador de asignación con semántica de movimiento
+    SmartPtrSemMov& operator=(SmartPtrSemMov& s) {
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = s.m_ptr;
+        s.m_ptr = nullptr;
+        return *this;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+void semanticaMovimiento() {
+    SmartPtrSemMov<Recurso> recurso ( new Recurso(9) );
+    std::cout << recurso->getId() << std::endl; // 9
+
+    //SmartPtrSemMov<Recurso> copia ( recurso ); // Llama constructor por copia
+    SmartPtrSemMov<Recurso> copia;                   // Inicia con nullptr por valor por default en nuestro constructor
+    copia = recurso;                             // Llama sobre-escritura del operador asignación
+
+    //recurso->getId() = nullptr
+    std::cout << copia->getId() << std::endl;   // 9
 }
 
 template <typename T>
