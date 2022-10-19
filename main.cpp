@@ -21,10 +21,44 @@
 
 
 int main() {
-    semanticaMovimiento();
+    referenciaLValueYRValue();
     return 0;
 }
 
+void compare(const int& lref) {
+    std::cout << "Referencia l-value " << lref << std::endl;
+}
+
+void compare(int&& rref) {
+    std::cout << "Referencia r-value " << rref << std::endl;
+}
+
+/*
+ * Las referencias l-value = referencias clasicas hasta C++11
+ */
+void referenciaLValueYRValue() {
+    int x { 5 };
+    int& lref { x };     // Referencia l-value inicializada con el valor l-value x
+    int&& rref { 5 };    // Referencia r-value inicializada con el r-value 5 (valor literal)
+                         // Las referencias r-values extienden la vida util del objeto con que se inicializan
+
+    auto&& rref2 { Simple(1) };
+    std::cout << rref2.getId() << std::endl;
+
+    int&& rref3 { 5 };
+    rref3 = 10;
+    std::cout << rref3 << std::endl; // 10
+
+    int y { 5 };
+    compare(y); // l-value
+    compare(6); // r-value
+
+    int &&rref4 { 7 };
+    compare(rref4); // Llama la función l-value, ya que despues de creada rref4 pasa a ser l-value
+                        // Los objetos que tienen nombre son siempre l-value y los anonimos son r-value
+
+    //No usar r-value como valores de retorno (o cualquier referencia), terminaran devolviendo una referencia colgante.
+}
 
 /**
  RAII: El recurso esta vinculado a la vida útil del objeto que adquirió ese recurso.

@@ -82,5 +82,6 @@ void myException();
 void exceptionesReThrowing();
 void punterosInteligentes();
 void semanticaMovimiento();
+void referenciaLValueYRValue();
 
 #endif //HELLOCPP_TEMAS_H
