@@ -19,11 +19,502 @@
 #include "clases/calculadora/Calculadora.h"
 #include "clases/copiaprofunda/ClaseConCopiaSuperficial.h"
 #include "clases/copiaprofunda/ClaseConCopiaProfunda.h"
+#include "clases/herencia/Guerrero.h"
+#include "clases/MyArray.h"
+#include "clases/recurso/Recurso.h"
 
 
 int main() {
-    claseConCopiaProfunda();
+    constructoresYAsignacionesPorMovimiento();
     return 0;
+}
+
+template <typename T>
+class SmartPtrCopiaProf {
+    T* m_ptr;
+
+public:
+    SmartPtrCopiaProf(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~SmartPtrCopiaProf() {
+        delete m_ptr;
+    }
+
+    // Constructor por copia - Hace copia profunda de s.m_ptr a m_ptr
+    SmartPtrCopiaProf(const SmartPtrCopiaProf& s) {
+        m_ptr = new T;
+        *m_ptr = *s.m_ptr;
+    }
+
+    // Asignación por copia - Hace copia profunda de s.m_ptr a m_ptr
+    SmartPtrCopiaProf& operator=(const SmartPtrCopiaProf& s) {
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = new T;
+        *m_ptr = *s.m_ptr;
+        return *this;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+SmartPtrCopiaProf<Recurso> crearRecurso() {
+    SmartPtrCopiaProf<Recurso> recurso { new Recurso(9) };
+    return recurso;
+}
+
+void constructoresYAsignacionesPorMovimiento() {
+    /*
+    {
+        SmartPtrCopiaProf<Recurso> r = crearRecurso(); // Solo llamaria una vez el constructor y el destructor de Recurso
+    }
+    */
+
+    // Ver el siguiente código en el depurador. Llama dos veces el contructor y dos veces el destructor de Recurso
+    SmartPtrCopiaProf<Recurso> r;    // Llama el constructor de SmartPtrCopiaProf con valor por defecto (nullptr)
+    r = crearRecurso();
+    std::cout << "..." << std::endl;
+    std::cout << r->getId() << std::endl;
+}
+
+
+void compare(const int& lref) {
+    std::cout << "Referencia l-value " << lref << std::endl;
+}
+
+void compare(int&& rref) {
+    std::cout << "Referencia r-value " << rref << std::endl;
+}
+
+/*
+ * Las referencias l-value = referencias clasicas hasta C++11
+ */
+void referenciaLValueYRValue() {
+    int x { 5 };
+    int& lref { x };     // Referencia l-value inicializada con el valor l-value x
+    int&& rref { 5 };    // Referencia r-value inicializada con el r-value 5 (valor literal)
+                         // Las referencias r-values extienden la vida util del objeto con que se inicializan
+
+    auto&& rref2 { Simple(1) };
+    std::cout << rref2.getId() << std::endl;
+
+    int&& rref3 { 5 };
+    rref3 = 10;
+    std::cout << rref3 << std::endl; // 10
+
+    int y { 5 };
+    compare(y); // l-value
+    compare(6); // r-value
+
+    int &&rref4 { 7 };
+    compare(rref4); // Llama la función l-value, ya que despues de creada rref4 pasa a ser l-value
+                        // Los objetos que tienen nombre son siempre l-value y los anonimos son r-value
+
+    //No usar r-value como valores de retorno (o cualquier referencia), terminaran devolviendo una referencia colgante.
+}
+
+/**
+ RAII: El recurso esta vinculado a la vida útil del objeto que adquirió ese recurso.
+ Semántica de movimiento: Transfiere la propiedad de un objeto a otro
+ */
+
+/*
+    Equivalente a std::auto_ptr de C++ 98 y eliminado en C++17 por problemas en diferencias entre copiar y mover,
+    ejemplo al pasar auto_ptr por valor a una función, al salir de la función se elimina con su valor interno
+
+    Diferencia entre semantica de copia y semantica de movimiento a partir de C++11 (moderno). (Ver arriba)
+*/
+template <typename T>
+class SmartPtrSemMov {
+    T* m_ptr;
+
+public:
+    SmartPtrSemMov(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~SmartPtrSemMov() {
+        delete m_ptr;
+    }
+
+    // Constructor por copia con semántica de movimiento
+    SmartPtrSemMov(SmartPtrSemMov& s) {
+        m_ptr = s.m_ptr;
+        s.m_ptr = nullptr;
+    }
+
+    // Operador de asignación con semántica de movimiento
+    SmartPtrSemMov& operator=(SmartPtrSemMov& s) {
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = s.m_ptr;
+        s.m_ptr = nullptr;
+        return *this;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+void semanticaMovimiento() {
+    SmartPtrSemMov<Recurso> recurso ( new Recurso(9) );
+    std::cout << recurso->getId() << std::endl; // 9
+
+    //SmartPtrSemMov<Recurso> copia ( recurso ); // Llama constructor por copia
+    SmartPtrSemMov<Recurso> copia;                   // Inicia con nullptr por valor por default en nuestro constructor
+    copia = recurso;                             // Llama sobre-escritura del operador asignación
+
+    //recurso->getId() = nullptr
+    std::cout << copia->getId() << std::endl;   // 9
+}
+
+template <typename T>
+class MySmartPtr {
+    T* m_ptr;
+
+public:
+    MySmartPtr(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~MySmartPtr() {
+        delete m_ptr;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+void punterosInteligentes() {
+    /*
+    Recurso* recurso = new Recurso(1);
+    delete recurso;
+    */
+
+    MySmartPtr<Recurso> recurso ( new Recurso(9) );
+    std::cout << recurso->getId() << std::endl;
+
+    /*
+    // Error si se usa constructor por copia
+    MySmartPtr<Recurso> copia ( recurso );
+    // Ver semantica del movimiento
+    */
+}
+
+void exceptionesReThrowing() {
+    try {
+        throw -1;
+    } catch (int exception) {
+        std::cerr << "Error " << std::endl;
+        throw 'z';
+
+        //throw exception; Relanzar la misma excepción genera una inicialización por copia
+        //Relanzar una excepción capturada desde su tipo padre corta el objeto a solo su tipo padre
+        //Lo anterior se soluciona de la siguiente forma:
+
+        //throw;
+    }
+}
+
+class MyException : public std::exception {
+private:
+    std::string m_error{};
+public:
+    MyException(const std::string_view error) : m_error(error) {}
+
+    const char* what() const noexcept override {
+        return m_error.c_str();
+    }
+    //const std::string& getError() const { return m_error; }
+};
+
+void myException() {
+    try {
+        throw MyException("Bummm!");
+    } catch (const MyException& exception) {
+        std::cerr << "Error " << exception.what() << std::endl;
+    } catch (const std::exception& exception) {
+        std::cerr << "Error general" << exception.what() << std::endl;
+    }
+}
+
+void clasesException() {
+    try {
+        // https://en.cppreference.com/w/cpp/error/exception
+        throw std::runtime_error("Bummm!");
+    } catch (const std::exception& exception) {
+        std::cerr << "Error " << exception.what() << std::endl;
+    }
+}
+
+void excepcionesCatchAll() {
+    try {
+        throw -1;
+    } catch (...) {
+        std::cerr << "Error" << std::endl;
+    }
+}
+
+int myFunct(int number) {
+    if (number < 0)
+        throw "Numero menor";
+    return number + 1;
+}
+
+void excepcionesEnFunciones() {
+    try {
+        myFunct(-1);
+    } catch (const char* exception) {
+        std::cerr << "Error " << exception << std::endl;
+    }
+}
+
+void erroresExcepciones() {
+    int value = 9;
+    try {
+        if (value == 9)
+            throw std::string("Bumm!!!");
+            //throw -1;
+
+        std::cout << "Ok" << std::endl;
+    } catch (int n) {
+        std::cerr << "Error " << n << std::endl; // cerr no se almacena en el buffer, ejecución inmediata
+    } catch (const std::string& error) {
+        std::cerr << "Error " << error << std::endl;
+    }
+
+    std::cout << "end." << std::endl;
+    // 'throw' salta al bloque envolvente 'try' mas cercano. try transmitira la excepción a los catch (busca un catch compatible)
+}
+
+/*
+Operadores Bitwise (Operadores bit a bit)
+    & AND bit a bit
+    | OR bit a bit
+    ^ XOR bit a bit
+    ~ Complemento bit a bit
+    << Desplazamiento a la izquierda bit a bit
+    >> Desplazamiento a la izquierda OR bit a bit
+ */
+
+template <typename T>
+class Wrapper8 {
+private:
+    T m_array[8]{};
+public:
+    void set(int index, const T& value) {
+        m_array[index] = value;
+    }
+
+    const T& get(int index) const {
+        return m_array[index];
+    }
+};
+
+// Especialización clase Wrapper8
+template<>
+class Wrapper8<bool> {
+private:
+    unsigned char m_data{};
+public:
+    void set(int index, bool value) {
+        auto mask{ 1 << index };
+        if (value)
+            m_data |= mask;
+        else
+            m_data &= ~mask;
+    }
+
+    //Podemos usar otros nombres de funciones sin problema ya que se trata de dos clases diferentes
+    bool get(int index) {
+        auto mask{ 1 << index };
+        return (m_data & mask);
+    }
+};
+
+void especializacionPlantillasDeClases() {
+    Wrapper8<int> intWrapper{};
+    intWrapper.set(6, 9);
+    std::cout << intWrapper.get(6) << std::endl;
+
+    Wrapper8<bool > boolWrapper{};
+    boolWrapper.set(6, true);
+    std::cout << std::boolalpha;
+    std::cout << boolWrapper.get(6) << "-" << boolWrapper.get(7) << std::endl;
+}
+
+template <typename T>
+class WrapperT {
+private:
+    T m_value{};
+public:
+    WrapperT(T value) : m_value(value) {}
+    ~WrapperT() {}; //Necesario para definir destructor especializado
+
+    void print() {
+        std::cout << m_value << std::endl;
+    }
+};
+
+// Especialización de constructor para realizar copia profunda
+template<>
+WrapperT<char*>::WrapperT(char* value) {
+    if (!value) return;
+
+    int size{ 0 };
+    while (value[size] != '\0')
+        ++size;
+    ++size;  // +1 - This array includes the same sequence of characters that make up the value of the string object plus an additional terminating null-character ('\0') at the end.
+
+    m_value = new char[size];
+
+    for (int i = 0; i < size; ++i)
+        m_value[i] = value[i];
+}
+
+// Destructor especializado
+template<>
+WrapperT<char*>::~WrapperT() {
+    delete[] m_value;
+}
+
+// Especialización de función para double
+template<>
+void WrapperT<double>::print() {
+    std::cout << std::scientific << m_value << std::endl;
+}
+
+void especializacionConstructorYDestructor() {
+    std::string  name;
+    std::cout << "Ingrese nombre:";
+    std::cin >> name;
+
+    WrapperT<char*> wrapper(name.data());
+    wrapper.print();
+
+    name.clear();
+    wrapper.print();
+}
+
+void especializacionPlantillas() {
+    WrapperT<int> intValue{ 9 };
+    WrapperT<double> doubleValue{ 9.5 };
+
+    intValue.print();
+    doubleValue.print();
+}
+
+template <typename T, int size>
+class ArrayEstatico {
+private:
+    T m_array[size]{};
+public:
+    T* getArray();
+
+    T& operator[](int index) {
+        return m_array[index];
+    }
+};
+
+template<typename T, int size>
+T *ArrayEstatico<T, size>::getArray() {
+    return m_array;
+}
+
+void templatesNoTipo() {
+    constexpr auto size = 3;
+    ArrayEstatico<double, size> doubleArray;
+    std::cout << doubleArray.getArray() << std::endl;
+
+    for (int i{ 0 }; i < size; ++i)
+        doubleArray[i] = 0.1 * i;
+
+    for (int i{ 0 }; i < size; ++i)
+        std::cout << doubleArray[i] << std::endl;
+}
+
+void templateClases() {
+    MyArray<int> intArray{9};
+    MyArray<double> intDouble{9};
+    for (int i{ 0 }; i < intArray.getSize(); ++i)
+        intArray[i] = i * 2;
+
+    for (int i{ intArray.getSize() - 1 }; i >= 0; --i)
+        std::cout << intArray[i] << std::endl;
+}
+
+class PadreFVPura {
+public:
+    virtual int getValorM() const = 0;
+};
+
+//Implementación predeterminada
+int PadreFVPura::getValorM() const { return 1; }
+
+class DerivadaFVPura: public PadreFVPura {
+public:
+    int getValorM() const override {
+        //return PadreFVPura::getValorM(); //Si queremos usar la implementación predeterminada
+        return 9;
+    }
+};
+
+void funcionesVirtualesPuras() {
+    //PadreFVPura padre; Error compilación, es una clase abstracta
+    DerivadaFVPura derivada;
+    PadreFVPura& padre { derivada };
+
+    std::cout << padre.getValorM() << std::endl; // 9
+}
+
+class Padre {
+public:
+    virtual std::string_view getNombre() const { return "Padre"; }
+};
+
+class Derivada: public Padre {
+public:
+    std::string_view getNombre() const override { return "Derivada"; }
+};
+
+void funcionesVirtuales() {
+    //Resuelve a la versión mas derivada que exista de la función
+    Derivada derivada;
+    Padre& padre { derivada };
+
+    std::cout << padre.getNombre() << std::endl;
+}
+
+void referenceWrapper() {
+    Padre padre {};
+    Derivada derivada {};
+
+    //std::vector<Padre&> vecr{}; // (Error compilación) Las referencias no pueden reasignarse, solo inicializarse
+    std::vector<std::reference_wrapper<Padre>> vector{};
+    vector.push_back(padre);
+    vector.push_back(derivada);
+
+    for (const auto& i : vector)
+        std::cout << i.get().getNombre() << std::endl;
+}
+
+void punteroClasePadre() {
+    Guerrero guerrero{ "Name", 10 };
+    Personaje& personajeRef { guerrero };
+    Personaje* personaje { &guerrero };
+
+    std::cout << guerrero.getNombre() << std::endl;
+}
+
+void herencia() {
+    Guerrero guerrero{ "Name", 10 };
+    std::cout << guerrero.getNombre() << std::endl;
+
+    /*
+     Internamente la herencia se implementa mediante composición.
+     guerrero
+        Personaje
+            nombre
+        puntos
+     */
 }
 
 ClaseConCopiaProfunda funcionCopiaProfunda(ClaseConCopiaProfunda clase) {
