@@ -9,7 +9,7 @@ private:
     int m_id{};
 
 public:
-    Recurso(int id) : m_id(id) {
+    Recurso(int id = 0) : m_id(id) {
         std::cout << "Constructor recurso " << m_id << std::endl;
     }
 

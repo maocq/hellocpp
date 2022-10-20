@@ -21,9 +21,60 @@
 
 
 int main() {
-    referenciaLValueYRValue();
+    constructoresYAsignacionesPorMovimiento();
     return 0;
 }
+
+template <typename T>
+class SmartPtrCopiaProf {
+    T* m_ptr;
+
+public:
+    SmartPtrCopiaProf(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~SmartPtrCopiaProf() {
+        delete m_ptr;
+    }
+
+    // Constructor por copia - Hace copia profunda de s.m_ptr a m_ptr
+    SmartPtrCopiaProf(const SmartPtrCopiaProf& s) {
+        m_ptr = new T;
+        *m_ptr = *s.m_ptr;
+    }
+
+    // Asignación por copia - Hace copia profunda de s.m_ptr a m_ptr
+    SmartPtrCopiaProf& operator=(const SmartPtrCopiaProf& s) {
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = new T;
+        *m_ptr = *s.m_ptr;
+        return *this;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+SmartPtrCopiaProf<Recurso> crearRecurso() {
+    SmartPtrCopiaProf<Recurso> recurso { new Recurso(9) };
+    return recurso;
+}
+
+void constructoresYAsignacionesPorMovimiento() {
+    /*
+    {
+        SmartPtrCopiaProf<Recurso> r = crearRecurso(); // Solo llamaria una vez el constructor y el destructor de Recurso
+    }
+    */
+
+    // Ver el siguiente código en el depurador. Llama dos veces el contructor y dos veces el destructor de Recurso
+    SmartPtrCopiaProf<Recurso> r;    // Llama el constructor de SmartPtrCopiaProf con valor por defecto (nullptr)
+    r = crearRecurso();
+    std::cout << "..." << std::endl;
+    std::cout << r->getId() << std::endl;
+}
+
 
 void compare(const int& lref) {
     std::cout << "Referencia l-value " << lref << std::endl;
