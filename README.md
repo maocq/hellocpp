@@ -25,7 +25,7 @@
 
 
 int main() {
-    constructoresYAsignacionesPorMovimiento();
+    constYAsigCopiaProfunda();
     return 0;
 }
 
@@ -65,7 +65,7 @@ SmartPtrCopiaProf<Recurso> crearRecurso() {
     return recurso;
 }
 
-void constructoresYAsignacionesPorMovimiento() {
+void constYAsigCopiaProfunda() {
     /*
     {
         SmartPtrCopiaProf<Recurso> r = crearRecurso(); // Solo llamaria una vez el constructor y el destructor de Recurso

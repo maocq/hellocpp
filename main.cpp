@@ -21,9 +21,70 @@
 
 
 int main() {
-    constructoresYAsignacionesPorMovimiento();
+    constYAsigCopiaProfundaYMovimiento();
     return 0;
 }
+
+
+template <typename T>
+class SmartPtrCopProfYMov {
+    T* m_ptr;
+
+public:
+    SmartPtrCopProfYMov(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~SmartPtrCopProfYMov() {
+        delete m_ptr;
+    }
+
+    // Constructor por copia - Hace copia profunda de s.m_ptr a m_ptr
+    SmartPtrCopProfYMov(const SmartPtrCopProfYMov& s) {
+        m_ptr = new T;
+        *m_ptr = *s.m_ptr;
+    }
+
+    // Constructor por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
+    SmartPtrCopProfYMov(SmartPtrCopProfYMov&& s) noexcept : m_ptr(s.m_ptr) {
+        s.m_ptr = nullptr; //Desasignar a s.m_ptr
+    }
+
+    // Asignación por copia - Hace copia profunda de s.m_ptr a m_ptr
+    SmartPtrCopProfYMov& operator=(const SmartPtrCopProfYMov& s) {
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = new T;
+        *m_ptr = *s.m_ptr;
+        return *this;
+    }
+
+    // Asignación por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
+    SmartPtrCopProfYMov& operator=(SmartPtrCopProfYMov&& s) {
+        // Detección de autoasignación
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = s.m_ptr;
+        s.m_ptr = nullptr;
+        return *this;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+SmartPtrCopProfYMov<Recurso> generarRecurso() {
+    SmartPtrCopProfYMov<Recurso> recurso { new Recurso(9) };
+    return recurso;
+}
+
+void constYAsigCopiaProfundaYMovimiento() {
+    SmartPtrCopProfYMov<Recurso> r;
+    r = generarRecurso();
+    std::cout << "..." << std::endl;
+}
+
 
 template <typename T>
 class SmartPtrCopiaProf {
@@ -61,7 +122,7 @@ SmartPtrCopiaProf<Recurso> crearRecurso() {
     return recurso;
 }
 
-void constructoresYAsignacionesPorMovimiento() {
+void constYAsigCopiaProfunda() {
     /*
     {
         SmartPtrCopiaProf<Recurso> r = crearRecurso(); // Solo llamaria una vez el constructor y el destructor de Recurso
