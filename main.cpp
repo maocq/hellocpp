@@ -59,7 +59,7 @@ public:
     }
 
     // Asignación por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
-    SmartPtrCopProfYMov& operator=(SmartPtrCopProfYMov&& s) {
+    SmartPtrCopProfYMov& operator=(SmartPtrCopProfYMov&& s) noexcept {
         // Detección de autoasignación
         if (&s == this)
             return *this;
@@ -77,11 +77,16 @@ public:
 SmartPtrCopProfYMov<Recurso> generarRecurso() {
     SmartPtrCopProfYMov<Recurso> recurso { new Recurso(9) };
     return recurso;
+    // Algunos compiladores en este punto pueden llamar el Constructor por movimiento.
 }
 
 void constYAsigCopiaProfundaYMovimiento() {
     SmartPtrCopProfYMov<Recurso> r;
-    r = generarRecurso();
+    r = generarRecurso(); // Despues de ejecutar generarRecurso() llama a la sobreescritura de asignación por movimiento (r-value)
+
+    /*
+    SmartPtrCopProfYMov<Recurso> r2 = generarRecurso(); // De esta forma el 'return recurso' se asigna directamente a r2
+    */
     std::cout << "..." << std::endl;
 }
 
