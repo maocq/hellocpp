@@ -90,5 +90,6 @@ void pasoParametrosPorCopia();
 void pasoParametroPorReferencia();
 void pasoParametroPorReferenciaYRetornoNormal();
 void pasoParametroPorReferenciaYRetornoReferencia();
+void copiaYOperadorAsignacion();
 
 #endif //HELLOCPP_TEMAS_H

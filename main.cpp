@@ -22,8 +22,30 @@
 
 
 int main() {
-    pasoParametroPorReferenciaYRetornoReferencia();
+    copiaYOperadorAsignacion();
     return 0;
+}
+
+void copiaYOperadorAsignacion() {
+    RecursoL r1 { 1 };   // Constructor recurso 1 0x1384bff66c
+    RecursoL r2 = r1;       // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff668
+    RecursoL r3 ( r1 );     // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff664
+    RecursoL r4 { r1 };     // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff660
+
+    RecursoL r5;            // Constructor recurso 0 0x1384bff65c - Usa valor id por defecto en el constructor int id = 0
+    r5 = r1;                // Asignacion por copia 0 from: 0x1384bff66c to: 0x1384bff65c
+
+    RecursoL r6 = RecursoL(3); // Constructor recurso 3 0x1384bff658 - rValue
+
+    std::cout << "end " << std::endl;
+    /*
+    Limpieza recurso 3 0x1384bff658
+    Limpieza recurso 1 0x1384bff65c
+    Limpieza recurso 1 0x1384bff660
+    Limpieza recurso 1 0x1384bff664
+    Limpieza recurso 1 0x1384bff668
+    Limpieza recurso 1 0x1384bff66c
+     */
 }
 
 RecursoL& funcionPorReferenciaYRetornoReferencia(RecursoL& r) {

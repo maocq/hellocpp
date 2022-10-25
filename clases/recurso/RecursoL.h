@@ -25,7 +25,7 @@ public:
 
     // Asignación por copia
     RecursoL& operator=(const RecursoL& r) {
-        std::cout << "Asignación por copia " << m_id << " from: " << &r << " to: " << this << std::endl;
+        std::cout << "Asignacion por copia " << m_id << " from: " << &r << " to: " << this << std::endl;
         if (&r == this)
             return *this;
 
@@ -35,7 +35,7 @@ public:
 
     // Asignación por movimiento
     RecursoL& operator=(RecursoL&& r) noexcept {
-        std::cout << "Asignación por movimiento " << m_id << " from: " << &r << " to: " << this << std::endl;
+        std::cout << "Asignacion por movimiento " << m_id << " from: " << &r << " to: " << this << std::endl;
         if (&r == this)
             return *this;
 
