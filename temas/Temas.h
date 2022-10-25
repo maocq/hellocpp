@@ -85,5 +85,9 @@ void semanticaMovimiento();
 void referenciaLValueYRValue();
 void constYAsigCopiaProfunda();
 void constYAsigCopiaProfundaYMovimiento();
+void stdMove();
+void parametroFuncionPorCopia();
+void parametroFuncionPorReferencia();
+void parametroFuncionPorReferenciaYRetorno();
 
 #endif //HELLOCPP_TEMAS_H

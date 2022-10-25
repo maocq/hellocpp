@@ -18,14 +18,100 @@
 #include "clases/herencia/Guerrero.h"
 #include "clases/MyArray.h"
 #include "clases/recurso/Recurso.h"
+#include "clases/recurso/RecursoL.h"
 
 
 int main() {
-    constYAsigCopiaProfundaYMovimiento();
+    parametroFuncionPorReferenciaYRetorno();
     return 0;
 }
 
+RecursoL funcionPorReferenciaYRetorno(RecursoL& r) {
+    std::cout << "function " << std::endl;
+    r.setId(r.getId() + 1);
+    return r;
+}
 
+void parametroFuncionPorReferenciaYRetorno() {
+    RecursoL r1 { 1 };
+    RecursoL r3 {funcionPorReferenciaYRetorno(r1) };
+
+    std::cout << "end " << std::endl;
+    /*
+    Constructor recurso 1 0xe2ad3ff60c
+    function
+    Constructor copia 2 from: 0xe2ad3ff60c to: 0xe2ad3ff608
+    end
+    Limpieza recurso 2 0xe2ad3ff608
+    Limpieza recurso 2 0xe2ad3ff60c
+     */
+}
+
+RecursoL funcionPorReferencia(RecursoL& r) {
+    std::cout << "function " << std::endl;
+    RecursoL recurso { r.getId() + 1 };
+    return recurso;
+}
+
+void parametroFuncionPorReferencia() {
+    RecursoL r1 { 1 };
+    RecursoL r3 {funcionPorReferencia(r1) };
+
+    std::cout << "end " << std::endl;
+    /*
+    Constructor recurso 1 0x13055ffd0c
+    function
+    Constructor recurso 2 0x13055ffd08
+    end
+    Limpieza recurso 2 0x13055ffd08
+    Limpieza recurso 1 0x13055ffd0c
+     */
+}
+
+RecursoL funcionPorCopia(RecursoL r) {
+    std::cout << "function " << std::endl;
+    RecursoL recurso { r.getId() + 1 };
+    return recurso;
+}
+
+void parametroFuncionPorCopia() {
+    RecursoL r1 { 1 };
+    RecursoL r3 {funcionPorCopia(r1) };
+
+    std::cout << "end " << std::endl;
+    /*
+    Constructor recurso 1 0x6a84bff668
+    Constructor copia 1 from: 0x6a84bff668 to: 0x6a84bff66c
+    function
+    Constructor recurso 2 0x6a84bff664
+    Limpieza recurso 1 0x6a84bff66c
+    end
+    Limpieza recurso 2 0x6a84bff664
+    Limpieza recurso 1 0x6a84bff668
+     */
+}
+
+void stdMove() {
+    // std::move indica que un objeto puede ser movido en lugar de copiado.
+
+    std::vector<std::string> vector;
+
+    std::string text1 { "Primer texto" };
+    std::string text2 { "Segundo texto" };
+
+    vector.push_back(text1);
+
+    std::cout << "t1: " << text1 << std::endl;
+    std::cout << "v1:" << vector[0] << std::endl;
+
+    // No se pueden volver a usar los objetos que hayan sido movidos
+    vector.push_back(std::move(text2));
+
+    std::cout << "t2: " << text2 << std::endl;
+    std::cout << "v2:" << vector[1] << std::endl;
+}
+
+/*
 template <typename T>
 class SmartPtrSoloMov {
     T* m_ptr;
@@ -59,6 +145,7 @@ public:
     T& operator*() const { return *m_ptr; }
     T* operator->() const { return m_ptr; }
 };
+*/
 
 template <typename T>
 class SmartPtrCopProfYMov {
