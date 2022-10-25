@@ -22,12 +22,294 @@
 #include "clases/herencia/Guerrero.h"
 #include "clases/MyArray.h"
 #include "clases/recurso/Recurso.h"
+#include "clases/recurso/RecursoL.h"
 
 
 int main() {
-    constYAsigCopiaProfunda();
+    stdMoveIntercambioPorMovimiento();
     return 0;
 }
+
+template<class T>
+void intercambioPorMovimiento(T& a, T& b) {
+    T temp { std::move(a) };   // Constructor movimiento 1 from: 0x9719dff61c to: 0x9719dff5dc
+    a = std::move(b);          // Asignacion por movimiento 1 from: 0x9719dff618 to: 0x9719dff61c
+    b = std::move(temp);       // Asignacion por movimiento 2 from: 0x9719dff5dc to: 0x9719dff618
+} // Limpieza recurso 1 0x9719dff5dc
+
+void stdMoveIntercambioPorMovimiento() {
+    RecursoL x {1 };    // Constructor recurso 1 0x9719dff61c
+    RecursoL y {2 };    // Constructor recurso 2 0x9719dff618
+
+    std::cout << "x " << x.getId() << std::endl;   // 1
+    std::cout << "y " << y.getId() << std::endl;   // 2
+
+    //std::move Cambia la categoria de valor de l-value a r-value
+    intercambioPorMovimiento(x, y);
+
+    std::cout << "x " << x.getId() << std::endl;   // 2
+    std::cout << "y " << y.getId() << std::endl;   // 1
+    std::cout << "end" << std::endl;
+    /*
+    Limpieza recurso 1 0x9719dff618
+    Limpieza recurso 2 0x9719dff61c
+     */
+}
+
+// Costoso por copia profunda
+template<class T>
+void intercambioPorCopia(T& a, T& b) {
+    T temp { a }; // Constructor copia 1 from: 0xdb683ff85c to: 0xdb683ff80c
+    a = b;        // Asignacion por copia from: 0xdb683ff858 to: 0xdb683ff85c
+    b = temp;     // Asignacion por copia from: 0xdb683ff80c to: 0xdb683ff858
+} // Limpieza recurso 1 0xdb683ff80c
+
+void stdMoveIntercambioPorCopia() {
+    RecursoL x {1 }; // Constructor recurso 1 0xdb683ff85c
+    RecursoL y {2 }; // Constructor recurso 2 0xdb683ff858
+
+    std::cout << "x " << x.getId() << std::endl;   // 1
+    std::cout << "y " << y.getId() << std::endl;   // 2
+
+    intercambioPorCopia(x, y); // 'x' y 'y' se pasan cómo l-values
+
+    std::cout << "x " << x.getId() << std::endl;   // 2
+    std::cout << "y " << y.getId() << std::endl;   // 1
+    std::cout << "end" << std::endl;
+    /*
+    Limpieza recurso 1 0xdb683ff858
+    Limpieza recurso 2 0xdb683ff85c
+     */
+}
+
+void copiaYOperadorAsignacion() {
+    RecursoL r1 { 1 };   // Constructor recurso 1 0x1384bff66c
+    RecursoL r2 = r1;       // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff668
+    RecursoL r3 ( r1 );     // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff664
+    RecursoL r4 { r1 };     // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff660
+
+    RecursoL r5;            // Constructor recurso 0 0x1384bff65c - Usa valor id por defecto en el constructor int id = 0
+    r5 = r1;                // Asignacion por copia 0 from: 0x1384bff66c to: 0x1384bff65c
+
+    RecursoL r6 = RecursoL(3); // Constructor recurso 3 0x1384bff658 - rValue
+
+    std::cout << "end " << std::endl;
+    /*
+    Limpieza recurso 3 0x1384bff658
+    Limpieza recurso 1 0x1384bff65c
+    Limpieza recurso 1 0x1384bff660
+    Limpieza recurso 1 0x1384bff664
+    Limpieza recurso 1 0x1384bff668
+    Limpieza recurso 1 0x1384bff66c
+     */
+}
+
+RecursoL& funcionPorReferenciaYRetornoReferencia(RecursoL& r) {
+    std::cout << "function " << std::endl;
+    r.setId(r.getId() + 1);
+    return r;
+}
+
+void pasoParametroPorReferenciaYRetornoReferencia() {
+    RecursoL r1 { 1 };
+    RecursoL r2 {funcionPorReferenciaYRetornoReferencia(r1) };
+
+    std::cout << "end " << std::endl;
+    /*
+    Constructor recurso 1 0x44ecdffb1c
+    function
+    Constructor copia 2 from: 0x44ecdffb1c to: 0x44ecdffb18
+    end
+    Limpieza recurso 2 0x44ecdffb18
+    Limpieza recurso 2 0x44ecdffb1c
+     */
+}
+
+RecursoL funcionPorReferenciaYRetornoNormal(RecursoL& r) {
+    std::cout << "function " << std::endl;
+    r.setId(r.getId() + 1);
+    return r;
+}
+
+void pasoParametroPorReferenciaYRetornoNormal() {
+    RecursoL r1 { 1 };
+    RecursoL r2 {funcionPorReferenciaYRetornoNormal(r1) };
+
+    std::cout << "end " << std::endl;
+    /*
+    Constructor recurso 1 0xe2ad3ff60c
+    function
+    Constructor copia 2 from: 0xe2ad3ff60c to: 0xe2ad3ff608
+    end
+    Limpieza recurso 2 0xe2ad3ff608
+    Limpieza recurso 2 0xe2ad3ff60c
+     */
+}
+
+RecursoL funcionPorReferencia(RecursoL& r) {
+    std::cout << "function " << std::endl;
+    RecursoL recurso { r.getId() + 1 };
+    return recurso;
+}
+
+void pasoParametroPorReferencia() {
+    RecursoL r1 { 1 };
+    RecursoL r2 {funcionPorReferencia(r1) };
+
+    std::cout << "end " << std::endl;
+    /*
+    Constructor recurso 1 0x13055ffd0c
+    function
+    Constructor recurso 2 0x13055ffd08
+    end
+    Limpieza recurso 2 0x13055ffd08
+    Limpieza recurso 1 0x13055ffd0c
+     */
+}
+
+RecursoL funcionPorCopia(RecursoL r) {
+    std::cout << "function " << std::endl;
+    RecursoL recurso { r.getId() + 1 };
+    return recurso;
+}
+
+void pasoParametrosPorCopia() {
+    RecursoL r1 { 1 };
+    RecursoL r2 {funcionPorCopia(r1) };
+
+    std::cout << "end " << std::endl;
+    /*
+    Constructor recurso 1 0x6a84bff668
+    Constructor copia 1 from: 0x6a84bff668 to: 0x6a84bff66c
+    function
+    Constructor recurso 2 0x6a84bff664
+    Limpieza recurso 1 0x6a84bff66c
+    end
+    Limpieza recurso 2 0x6a84bff664
+    Limpieza recurso 1 0x6a84bff668
+     */
+}
+
+void stdMove() {
+    // std::move indica que un objeto puede ser movido en lugar de copiado.
+
+    std::vector<std::string> vector;
+
+    std::string text1 { "Primer texto" };
+    std::string text2 { "Segundo texto" };
+
+    vector.push_back(text1);
+
+    std::cout << "t1: " << text1 << std::endl;
+    std::cout << "v1:" << vector[0] << std::endl;
+
+    // No se pueden volver a usar los objetos que hayan sido movidos
+    vector.push_back(std::move(text2));
+
+    std::cout << "t2: " << text2 << std::endl;
+    std::cout << "v2:" << vector[1] << std::endl;
+}
+
+/*
+template <typename T>
+class SmartPtrSoloMov {
+    T* m_ptr;
+
+public:
+    SmartPtrSoloMov(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~SmartPtrSoloMov() { delete m_ptr; }
+
+    // Impide constructor por copia
+    SmartPtrSoloMov(const SmartPtrSoloMov& s) = delete;
+
+    // Constructor por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
+    SmartPtrSoloMov(SmartPtrSoloMov&& s) noexcept : m_ptr(s.m_ptr) {
+        s.m_ptr = nullptr; //Desasignar a s.m_ptr
+    }
+
+    // Impide asignación por copia
+    SmartPtrSoloMov& operator=(const SmartPtrSoloMov& s) = delete;
+
+    // Asignación por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
+    SmartPtrSoloMov& operator=(SmartPtrSoloMov&& s) noexcept {
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = s.m_ptr;
+        s.m_ptr = nullptr;
+        return *this;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+*/
+
+template <typename T>
+class SmartPtrCopProfYMov {
+    T* m_ptr;
+
+public:
+    SmartPtrCopProfYMov(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~SmartPtrCopProfYMov() {
+        delete m_ptr;
+    }
+
+    // Constructor por copia - Hace copia profunda de s.m_ptr a m_ptr
+    SmartPtrCopProfYMov(const SmartPtrCopProfYMov& s) {
+        m_ptr = new T;
+        *m_ptr = *s.m_ptr;
+    }
+
+    // Constructor por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
+    SmartPtrCopProfYMov(SmartPtrCopProfYMov&& s) noexcept : m_ptr(s.m_ptr) {
+        s.m_ptr = nullptr; //Desasignar a s.m_ptr
+    }
+
+    // Asignación por copia - Hace copia profunda de s.m_ptr a m_ptr
+    SmartPtrCopProfYMov& operator=(const SmartPtrCopProfYMov& s) {
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = new T;
+        *m_ptr = *s.m_ptr;
+        return *this;
+    }
+
+    // Asignación por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
+    SmartPtrCopProfYMov& operator=(SmartPtrCopProfYMov&& s) noexcept {
+        // Detección de autoasignación
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = s.m_ptr;
+        s.m_ptr = nullptr;
+        return *this;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+SmartPtrCopProfYMov<Recurso> generarRecurso() {
+    SmartPtrCopProfYMov<Recurso> recurso { new Recurso(9) };
+    return recurso;
+    // Algunos compiladores en este punto pueden llamar el Constructor por movimiento.
+}
+
+void constYAsigCopiaProfundaYMovimiento() {
+    SmartPtrCopProfYMov<Recurso> r;
+    r = generarRecurso(); // Despues de ejecutar generarRecurso() llama a la sobreescritura de asignación por movimiento (r-value)
+
+    /*
+    SmartPtrCopProfYMov<Recurso> r2 = generarRecurso(); // De esta forma el 'return recurso' se asigna directamente a r2
+    */
+    std::cout << "..." << std::endl;
+}
+
 
 template <typename T>
 class SmartPtrCopiaProf {
