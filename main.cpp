@@ -27,6 +27,40 @@ int main() {
 
 
 template <typename T>
+class SmartPtrSoloMov {
+    T* m_ptr;
+
+public:
+    SmartPtrSoloMov(T* ptr = nullptr) : m_ptr(ptr) {}
+    ~SmartPtrSoloMov() { delete m_ptr; }
+
+    // Impide constructor por copia
+    SmartPtrSoloMov(const SmartPtrSoloMov& s) = delete;
+
+    // Constructor por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
+    SmartPtrSoloMov(SmartPtrSoloMov&& s) noexcept : m_ptr(s.m_ptr) {
+        s.m_ptr = nullptr; //Desasignar a s.m_ptr
+    }
+
+    // Impide asignación por copia
+    SmartPtrSoloMov& operator=(const SmartPtrSoloMov& s) = delete;
+
+    // Asignación por movimiento - Transfiere la propiedad s.m_ptr a m_ptr
+    SmartPtrSoloMov& operator=(SmartPtrSoloMov&& s) noexcept {
+        if (&s == this)
+            return *this;
+
+        delete m_ptr;
+        m_ptr = s.m_ptr;
+        s.m_ptr = nullptr;
+        return *this;
+    }
+
+    T& operator*() const { return *m_ptr; }
+    T* operator->() const { return m_ptr; }
+};
+
+template <typename T>
 class SmartPtrCopProfYMov {
     T* m_ptr;
 
