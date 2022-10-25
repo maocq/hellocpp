@@ -91,5 +91,7 @@ void pasoParametroPorReferencia();
 void pasoParametroPorReferenciaYRetornoNormal();
 void pasoParametroPorReferenciaYRetornoReferencia();
 void copiaYOperadorAsignacion();
+void stdMoveIntercambioPorCopia();
+void stdMoveIntercambioPorMovimiento();
 
 #endif //HELLOCPP_TEMAS_H

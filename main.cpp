@@ -22,8 +22,60 @@
 
 
 int main() {
-    copiaYOperadorAsignacion();
+    stdMoveIntercambioPorMovimiento();
     return 0;
+}
+
+template<class T>
+void intercambioPorMovimiento(T& a, T& b) {
+    T temp { std::move(a) };   // Constructor movimiento 1 from: 0x9719dff61c to: 0x9719dff5dc
+    a = std::move(b);          // Asignacion por movimiento 1 from: 0x9719dff618 to: 0x9719dff61c
+    b = std::move(temp);       // Asignacion por movimiento 2 from: 0x9719dff5dc to: 0x9719dff618
+} // Limpieza recurso 1 0x9719dff5dc
+
+void stdMoveIntercambioPorMovimiento() {
+    RecursoL x {1 };    // Constructor recurso 1 0x9719dff61c
+    RecursoL y {2 };    // Constructor recurso 2 0x9719dff618
+
+    std::cout << "x " << x.getId() << std::endl;   // 1
+    std::cout << "y " << y.getId() << std::endl;   // 2
+
+    //std::move Cambia la categoria de valor de l-value a r-value
+    intercambioPorMovimiento(x, y);
+
+    std::cout << "x " << x.getId() << std::endl;   // 2
+    std::cout << "y " << y.getId() << std::endl;   // 1
+    std::cout << "end" << std::endl;
+    /*
+    Limpieza recurso 1 0x9719dff618
+    Limpieza recurso 2 0x9719dff61c
+     */
+}
+
+// Costoso por copia profunda
+template<class T>
+void intercambioPorCopia(T& a, T& b) {
+    T temp { a }; // Constructor copia 1 from: 0xdb683ff85c to: 0xdb683ff80c
+    a = b;        // Asignacion por copia from: 0xdb683ff858 to: 0xdb683ff85c
+    b = temp;     // Asignacion por copia from: 0xdb683ff80c to: 0xdb683ff858
+} // Limpieza recurso 1 0xdb683ff80c
+
+void stdMoveIntercambioPorCopia() {
+    RecursoL x {1 }; // Constructor recurso 1 0xdb683ff85c
+    RecursoL y {2 }; // Constructor recurso 2 0xdb683ff858
+
+    std::cout << "x " << x.getId() << std::endl;   // 1
+    std::cout << "y " << y.getId() << std::endl;   // 2
+
+    intercambioPorCopia(x, y); // 'x' y 'y' se pasan cómo l-values
+
+    std::cout << "x " << x.getId() << std::endl;   // 2
+    std::cout << "y " << y.getId() << std::endl;   // 1
+    std::cout << "end" << std::endl;
+    /*
+    Limpieza recurso 1 0xdb683ff858
+    Limpieza recurso 2 0xdb683ff85c
+     */
 }
 
 void copiaYOperadorAsignacion() {
