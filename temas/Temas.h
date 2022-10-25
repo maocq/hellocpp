@@ -86,8 +86,9 @@ void referenciaLValueYRValue();
 void constYAsigCopiaProfunda();
 void constYAsigCopiaProfundaYMovimiento();
 void stdMove();
-void parametroFuncionPorCopia();
-void parametroFuncionPorReferencia();
-void parametroFuncionPorReferenciaYRetorno();
+void pasoParametrosPorCopia();
+void pasoParametroPorReferencia();
+void pasoParametroPorReferenciaYRetornoNormal();
+void pasoParametroPorReferenciaYRetornoReferencia();
 
 #endif //HELLOCPP_TEMAS_H

@@ -22,19 +22,40 @@
 
 
 int main() {
-    parametroFuncionPorReferenciaYRetorno();
+    pasoParametroPorReferenciaYRetornoReferencia();
     return 0;
 }
 
-RecursoL funcionPorReferenciaYRetorno(RecursoL& r) {
+RecursoL& funcionPorReferenciaYRetornoReferencia(RecursoL& r) {
     std::cout << "function " << std::endl;
     r.setId(r.getId() + 1);
     return r;
 }
 
-void parametroFuncionPorReferenciaYRetorno() {
+void pasoParametroPorReferenciaYRetornoReferencia() {
     RecursoL r1 { 1 };
-    RecursoL r3 {funcionPorReferenciaYRetorno(r1) };
+    RecursoL r2 {funcionPorReferenciaYRetornoReferencia(r1) };
+
+    std::cout << "end " << std::endl;
+    /*
+    Constructor recurso 1 0x44ecdffb1c
+    function
+    Constructor copia 2 from: 0x44ecdffb1c to: 0x44ecdffb18
+    end
+    Limpieza recurso 2 0x44ecdffb18
+    Limpieza recurso 2 0x44ecdffb1c
+     */
+}
+
+RecursoL funcionPorReferenciaYRetornoNormal(RecursoL& r) {
+    std::cout << "function " << std::endl;
+    r.setId(r.getId() + 1);
+    return r;
+}
+
+void pasoParametroPorReferenciaYRetornoNormal() {
+    RecursoL r1 { 1 };
+    RecursoL r2 {funcionPorReferenciaYRetornoNormal(r1) };
 
     std::cout << "end " << std::endl;
     /*
@@ -53,9 +74,9 @@ RecursoL funcionPorReferencia(RecursoL& r) {
     return recurso;
 }
 
-void parametroFuncionPorReferencia() {
+void pasoParametroPorReferencia() {
     RecursoL r1 { 1 };
-    RecursoL r3 {funcionPorReferencia(r1) };
+    RecursoL r2 {funcionPorReferencia(r1) };
 
     std::cout << "end " << std::endl;
     /*
@@ -74,9 +95,9 @@ RecursoL funcionPorCopia(RecursoL r) {
     return recurso;
 }
 
-void parametroFuncionPorCopia() {
+void pasoParametrosPorCopia() {
     RecursoL r1 { 1 };
-    RecursoL r3 {funcionPorCopia(r1) };
+    RecursoL r2 {funcionPorCopia(r1) };
 
     std::cout << "end " << std::endl;
     /*
