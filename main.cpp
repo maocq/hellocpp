@@ -60,163 +60,140 @@ void smartPointerUniquePtr() {
 
 template<class T>
 void intercambioPorMovimiento(T& a, T& b) {
-    T temp { std::move(a) };   // Constructor movimiento 1 from: 0x9719dff61c to: 0x9719dff5dc
-    a = std::move(b);          // Asignacion por movimiento 1 from: 0x9719dff618 to: 0x9719dff61c
-    b = std::move(temp);       // Asignacion por movimiento 2 from: 0x9719dff5dc to: 0x9719dff618
-} // Limpieza recurso 1 0x9719dff5dc
+    T temp { std::move(a) };                       // 5. Constructor movimiento 1 from: 0x738abffd1c to: 0x738abffcdc
+    a = std::move(b);                              // 6. Asignacion por movimiento 1 from: 0x738abffd18 to: 0x738abffd1c
+    b = std::move(temp);                           // 7. Asignacion por movimiento 2 from: 0x738abffcdc to: 0x738abffd18
+}                                                  // 8. Limpieza recurso 1 0x738abffcdc
 
 void stdMoveIntercambioPorMovimiento() {
-    RecursoL x {1 };    // Constructor recurso 1 0x9719dff61c
-    RecursoL y {2 };    // Constructor recurso 2 0x9719dff618
+    RecursoL x {1 };                               // 1. Constructor recurso 1 0x738abffd1c
+    RecursoL y {2 };                               // 2. Constructor recurso 2 0x738abffd18
 
-    std::cout << "x " << x.getId() << std::endl;   // 1
-    std::cout << "y " << y.getId() << std::endl;   // 2
+    std::cout << "x " << x.getId() << std::endl;   // 3. x 1
+    std::cout << "y " << y.getId() << std::endl;   // 4. y 2
 
     //std::move Cambia la categoria de valor de l-value a r-value
     intercambioPorMovimiento(x, y);
 
-    std::cout << "x " << x.getId() << std::endl;   // 2
-    std::cout << "y " << y.getId() << std::endl;   // 1
-    std::cout << "end" << std::endl;
-    /*
-    Limpieza recurso 1 0x9719dff618
-    Limpieza recurso 2 0x9719dff61c
-     */
-}
+    std::cout << "x " << x.getId() << std::endl;   // 9. x 2
+    std::cout << "y " << y.getId() << std::endl;   // 10. y 1
+    std::cout << "end" << std::endl;               // 11. end
+} /* 12.
+    Limpieza recurso 1 0x738abffd18
+    Limpieza recurso 2 0x738abffd1c
+*/
 
 // Costoso por copia profunda
 template<class T>
 void intercambioPorCopia(T& a, T& b) {
-    T temp { a }; // Constructor copia 1 from: 0xdb683ff85c to: 0xdb683ff80c
-    a = b;        // Asignacion por copia from: 0xdb683ff858 to: 0xdb683ff85c
-    b = temp;     // Asignacion por copia from: 0xdb683ff80c to: 0xdb683ff858
-} // Limpieza recurso 1 0xdb683ff80c
+    T temp { a };                                  // 5. Constructor copia 1 from: 0xaa4bfffb4c to: 0xaa4bfffafc
+    a = b;                                         // 6. Asignacion por copia 1 from: 0xaa4bfffb48 to: 0xaa4bfffb4c
+    b = temp;                                      // 7. Asignacion por copia 2 from: 0xaa4bfffafc to: 0xaa4bfffb48
+}                                                  // 8. Limpieza recurso 1 0xaa4bfffafc
 
 void stdMoveIntercambioPorCopia() {
-    RecursoL x {1 }; // Constructor recurso 1 0xdb683ff85c
-    RecursoL y {2 }; // Constructor recurso 2 0xdb683ff858
+    RecursoL x {1 };                               // 1. Constructor recurso 1 0xaa4bfffb4c
+    RecursoL y {2 };                               // 2. Constructor recurso 2 0xaa4bfffb48
 
-    std::cout << "x " << x.getId() << std::endl;   // 1
-    std::cout << "y " << y.getId() << std::endl;   // 2
+    std::cout << "x " << x.getId() << std::endl;   // 3. x 1
+    std::cout << "y " << y.getId() << std::endl;   // 4. y 2
 
     intercambioPorCopia(x, y); // 'x' y 'y' se pasan cómo l-values
 
-    std::cout << "x " << x.getId() << std::endl;   // 2
-    std::cout << "y " << y.getId() << std::endl;   // 1
-    std::cout << "end" << std::endl;
-    /*
-    Limpieza recurso 1 0xdb683ff858
-    Limpieza recurso 2 0xdb683ff85c
-     */
-}
+    std::cout << "x " << x.getId() << std::endl;   // 9. x 2
+    std::cout << "y " << y.getId() << std::endl;   // 10. y 1
+    std::cout << "end" << std::endl;               // 11. end
+} /* 12.
+    Limpieza recurso 1 0xaa4bfffb48
+    Limpieza recurso 2 0xaa4bfffb4c
+*/
 
 void copiaYOperadorAsignacion() {
-    RecursoL r1 { 1 };   // Constructor recurso 1 0x1384bff66c
-    RecursoL r2 = r1;       // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff668
-    RecursoL r3 ( r1 );     // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff664
-    RecursoL r4 { r1 };     // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff660
+    RecursoL r1 { 1 };                 // 1. Constructor recurso 1 0xf3fd5ff5bc
+    RecursoL r2 = r1;                  // 2. Constructor copia 1 from: 0xf3fd5ff5bc to: 0xf3fd5ff5b8
+    RecursoL r3 ( r1 );                // 3. Constructor copia 1 from: 0xf3fd5ff5bc to: 0xf3fd5ff5b4
+    RecursoL r4 { r1 };                // 4. Constructor copia 1 from: 0xf3fd5ff5bc to: 0xf3fd5ff5b0
 
-    RecursoL r5;            // Constructor recurso 0 0x1384bff65c - Usa valor id por defecto en el constructor int id = 0
-    r5 = r1;                // Asignacion por copia 0 from: 0x1384bff66c to: 0x1384bff65c
+    RecursoL r5;                       // 5. Constructor recurso 0 0xf3fd5ff5ac - Usa valor id por defecto en el constructor int id = 0
+    r5 = r1;                           // 6. Asignacion por copia 0 from: 0xf3fd5ff5bc to: 0xf3fd5ff5ac
 
-    RecursoL r6 = RecursoL(3); // Constructor recurso 3 0x1384bff658 - rValue
+    RecursoL r6 = RecursoL(3);         // 7. Constructor recurso 3 0xf3fd5ff5a8 - rValue
 
-    std::cout << "end " << std::endl;
-    /*
-    Limpieza recurso 3 0x1384bff658
-    Limpieza recurso 1 0x1384bff65c
-    Limpieza recurso 1 0x1384bff660
-    Limpieza recurso 1 0x1384bff664
-    Limpieza recurso 1 0x1384bff668
-    Limpieza recurso 1 0x1384bff66c
-     */
-}
+    std::cout << "end " << std::endl;  // 8. end
+} /* 9.
+    Limpieza recurso 3 0xf3fd5ff5a8
+    Limpieza recurso 1 0xf3fd5ff5ac
+    Limpieza recurso 1 0xf3fd5ff5b0
+    Limpieza recurso 1 0xf3fd5ff5b4
+    Limpieza recurso 1 0xf3fd5ff5b8
+    Limpieza recurso 1 0xf3fd5ff5bc
+*/
 
 RecursoL& funcionPorReferenciaYRetornoReferencia(RecursoL& r) {
-    std::cout << "function " << std::endl;
+    std::cout << "function " << std::endl;     // 2. function
     r.setId(r.getId() + 1);
     return r;
-}
+}                                              // 3. Constructor copia 2 from: 0x27075ffb2c to: 0x27075ffb28
 
+// Comportamiento similar a pasoParametroPorReferenciaYRetornoNormal
 void pasoParametroPorReferenciaYRetornoReferencia() {
-    RecursoL r1 { 1 };
-    RecursoL r2 {funcionPorReferenciaYRetornoReferencia(r1) };
+    RecursoL r1 { 1 };                         // 1. Constructor recurso 1 0x27075ffb2c
+    RecursoL r2 { funcionPorReferenciaYRetornoReferencia(r1) };
 
-    std::cout << "end " << std::endl;
-    /*
-    Constructor recurso 1 0x44ecdffb1c
-    function
-    Constructor copia 2 from: 0x44ecdffb1c to: 0x44ecdffb18
-    end
-    Limpieza recurso 2 0x44ecdffb18
-    Limpieza recurso 2 0x44ecdffb1c
-     */
-}
+    std::cout << "end " << std::endl;          // 4. end
+} /* 5.
+    Limpieza recurso 2 0x27075ffb28
+    Limpieza recurso 2 0x27075ffb2c
+*/
 
 RecursoL funcionPorReferenciaYRetornoNormal(RecursoL& r) {
-    std::cout << "function " << std::endl;
+    std::cout << "function " << std::endl;                   // 2. function
     r.setId(r.getId() + 1);
-    return r;
+    return r;                                                // 3. Constructor copia 2 from: 0x839fdff5ec to: 0x839fdff5e8
 }
 
 void pasoParametroPorReferenciaYRetornoNormal() {
-    RecursoL r1 { 1 };
+    RecursoL r1 { 1 };                                       // 1. Constructor recurso 1 0x839fdff5ec
     RecursoL r2 {funcionPorReferenciaYRetornoNormal(r1) };
 
-    std::cout << "end " << std::endl;
-    /*
-    Constructor recurso 1 0xe2ad3ff60c
-    function
-    Constructor copia 2 from: 0xe2ad3ff60c to: 0xe2ad3ff608
-    end
-    Limpieza recurso 2 0xe2ad3ff608
-    Limpieza recurso 2 0xe2ad3ff60c
-     */
-}
+    std::cout << "end " << std::endl;                        // 4. end
+} /* 5.
+    Limpieza recurso 2 0x839fdff5e8
+    Limpieza recurso 2 0x839fdff5ec
+*/
 
 RecursoL funcionPorReferencia(RecursoL& r) {
-    std::cout << "function " << std::endl;
-    RecursoL recurso { r.getId() + 1 };
+    std::cout << "function " << std::endl;     // 2. function
+    RecursoL recurso { r.getId() + 1 };        // 3. Constructor recurso 2 0xa3933ff708
     return recurso;
 }
 
 void pasoParametroPorReferencia() {
-    RecursoL r1 { 1 };
+    RecursoL r1 { 1 };                         // 1. Constructor recurso 1 0xa3933ff70c
     RecursoL r2 {funcionPorReferencia(r1) };
 
-    std::cout << "end " << std::endl;
-    /*
-    Constructor recurso 1 0x13055ffd0c
-    function
-    Constructor recurso 2 0x13055ffd08
-    end
-    Limpieza recurso 2 0x13055ffd08
-    Limpieza recurso 1 0x13055ffd0c
-     */
-}
+    std::cout << "end " << std::endl;          // 4. end
+} /* 5.
+    Limpieza recurso 2 0xa3933ff708
+    Limpieza recurso 1 0xa3933ff70c
+*/
 
-RecursoL funcionPorCopia(RecursoL r) {
-    std::cout << "function " << std::endl;
-    RecursoL recurso { r.getId() + 1 };
+RecursoL funcionPorCopia(RecursoL r) {        // 2. Constructor copia 1 from: 0xe40b9ff6f8 to: 0xe40b9ff6fc
+    std::cout << "function " << std::endl;    // 3. function
+    RecursoL recurso { r.getId() + 1 };       // 4. Constructor recurso 2 0xe40b9ff6f4
     return recurso;
-}
+}                                             // 5. Limpieza recurso 1 0xe40b9ff6fc
 
 void pasoParametrosPorCopia() {
-    RecursoL r1 { 1 };
+    RecursoL r1 { 1 };                        // 1. Constructor recurso 1 0xe40b9ff6f8
     RecursoL r2 {funcionPorCopia(r1) };
 
-    std::cout << "end " << std::endl;
-    /*
-    Constructor recurso 1 0x6a84bff668
-    Constructor copia 1 from: 0x6a84bff668 to: 0x6a84bff66c
-    function
-    Constructor recurso 2 0x6a84bff664
-    Limpieza recurso 1 0x6a84bff66c
-    end
-    Limpieza recurso 2 0x6a84bff664
-    Limpieza recurso 1 0x6a84bff668
-     */
-}
+    std::cout << "end " << std::endl;         // 6. end
+
+} /* 7.
+    Limpieza recurso 2 0xe40b9ff6f4
+    Limpieza recurso 1 0xe40b9ff6f8
+*/
 
 void stdMove() {
     // std::move indica que un objeto puede ser movido en lugar de copiado.
