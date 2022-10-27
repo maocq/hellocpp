@@ -93,5 +93,7 @@ void pasoParametroPorReferenciaYRetornoReferencia();
 void copiaYOperadorAsignacion();
 void stdMoveIntercambioPorCopia();
 void stdMoveIntercambioPorMovimiento();
+void smartPointerUniquePtr();
+void smartPointerUniquePtrMove();
 
 #endif //HELLOCPP_TEMAS_H

@@ -48,6 +48,11 @@ public:
         std::cout << "Limpieza recurso " << m_id << " " << this << std::endl;
     }
 
+    friend std::ostream& operator<<(std::ostream& out, const RecursoL& r) {
+        out << "Recurso " << r.m_id;
+        return out;
+    }
+
     int getId() const { return m_id; }
     void setId(int id) { m_id = id; }
 };

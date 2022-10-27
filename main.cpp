@@ -2,6 +2,7 @@
 #include <vector>
 #include <functional>
 #include <cassert>
+#include <memory>
 #include "temas/Temas.h"
 #include "sumar/Sumar.h"
 #include "namespaces/Uno.h"
@@ -22,9 +23,40 @@
 
 
 int main() {
-    stdMoveIntercambioPorMovimiento();
+    smartPointerUniquePtrMove();
     return 0;
 }
+
+void smartPointerUniquePtrMove() {
+    std::unique_ptr<RecursoL> r1 { new RecursoL(1) };   // Constructor recurso 1 0x20139dd1b80
+    std::unique_ptr<RecursoL> r2 {};
+
+    std::cout << "res1 " << (r1 ? "no null" : "null") << std::endl;   // no null
+    std::cout << "res2 " << (r2 ? "no null" : "null") << std::endl;   // null
+
+    //r2 = r1;              // No compilará - La asignación por copia está deshabilitada
+    r2 = std::move(r1);     // r2 asume la propiedad, r1 es configurado a null
+
+    std::cout << "Propiedad transferida" << std::endl;
+    std::cout << "res1 " << (r1 ? "no null" : "null") << std::endl;   // null
+    std::cout << "res2 " << (r2 ? "no null" : "null") << std::endl;   // no null
+
+
+    if (r2) // Usa cast implícito a bool para asegurarse que r2 contiene un recurso
+        std::cout << *r2 << std::endl; // Imprime el RecursoL que posee r2. Similar a T& operator*() const { return *m_ptr }
+
+} // Limpieza recurso 1 0x20139dd1b80
+
+void smartPointerUniquePtr() {
+    /*
+    RecursoL* recurso = new RecursoL(1); // Asignación dinamica en memoria
+    delete recurso; // Desasignación de memoria
+    */
+
+    // #include <memory>
+    // El objeto asignado dinámicamente no puede ser compartido con otros objetos
+    std::unique_ptr<RecursoL> recurso { new RecursoL(1) }; //Constructor recurso 1 0x1a2171e18d0
+} // Limpieza recurso 1 0x1a2171e18d0
 
 template<class T>
 void intercambioPorMovimiento(T& a, T& b) {
