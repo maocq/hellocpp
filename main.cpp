@@ -54,12 +54,15 @@ void smartPointersRetornoFuncion() {
 }                                                            // 3. Limpieza recurso 9 0x1e998d61b80
 
 void erroresAlUsarSmartPointers() {
+    // No permitir que varios objetos administren el mismo recurso
     RecursoL* x { new RecursoL(1) };
     std::unique_ptr<RecursoL> x1 { x };
     std::unique_ptr<RecursoL> x2 { x };
+    //Ambos ptrs intentaran desasignar el recurso
 
     std::cout << "..." << std::endl;
 
+    // No eliminar manualmente el recurso que administra un unique_ptr
     RecursoL* y { new RecursoL(1) };
     std::unique_ptr<RecursoL> y2 { y };
     delete y;
