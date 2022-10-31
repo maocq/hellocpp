@@ -37,9 +37,11 @@ void smartPointersRetornoParametro() {
 
     //tomarPropiedad(ptr); // No compila, la asignación por copia está deshabilitada
     tomarPropiedad(std::move(ptr));
+                                                              // (prt RecursoL ahora es NULL)
     std::cout << "end" << std::endl;                          // 4. end
 }
 
+// make_unique nos permite asignar un recurso a un std::unique_ptr sin necesidad de unsar 'new'
 std::unique_ptr<RecursoL> crearRecursoLPtr() {
     return std::make_unique<RecursoL>(9);                     // 1. Constructor recurso 9 0x1e998d61b80
 }
