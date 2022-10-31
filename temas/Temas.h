@@ -95,5 +95,8 @@ void stdMoveIntercambioPorCopia();
 void stdMoveIntercambioPorMovimiento();
 void smartPointerUniquePtr();
 void smartPointerUniquePtrMove();
+void erroresAlUsarSmartPointers();
+void smartPointersRetornoFuncion();
+void smartPointersRetornoParametro();
 
 #endif //HELLOCPP_TEMAS_H

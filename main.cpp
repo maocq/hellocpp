@@ -23,8 +23,44 @@
 
 
 int main() {
-    smartPointerUniquePtrMove();
+    smartPointersRetornoParametro();
     return 0;
+}
+
+void tomarPropiedad(std::unique_ptr<RecursoL> r) {
+    if (r)
+        std::cout << "id: " << r->getId() << std::endl;       // 2. id: 9
+}                                                             // 3. Limpieza recurso 9 0x29497001b80
+
+void smartPointersRetornoParametro() {
+    auto ptr { std::make_unique<RecursoL>(9) };               // 1. Constructor recurso 9 0x29497001b80
+
+    //tomarPropiedad(ptr); // No compila, la asignación por copia está deshabilitada
+    tomarPropiedad(std::move(ptr));
+    std::cout << "end" << std::endl;                          // 4. end
+}
+
+std::unique_ptr<RecursoL> crearRecursoLPtr() {
+    return std::make_unique<RecursoL>(9);                     // 1. Constructor recurso 9 0x1e998d61b80
+}
+
+void smartPointersRetornoFuncion() {
+    //std::unique_ptr<RecursoL> r { crearRecursoLPtr() };
+    auto r { crearRecursoLPtr() };
+
+    std::cout << "id: " << r->getId() << std::endl;          // 2. id: 9
+}                                                            // 3. Limpieza recurso 9 0x1e998d61b80
+
+void erroresAlUsarSmartPointers() {
+    RecursoL* x { new RecursoL(1) };
+    std::unique_ptr<RecursoL> x1 { x };
+    std::unique_ptr<RecursoL> x2 { x };
+
+    std::cout << "..." << std::endl;
+
+    RecursoL* y { new RecursoL(1) };
+    std::unique_ptr<RecursoL> y2 { y };
+    delete y;
 }
 
 void smartPointerUniquePtrMove() {
