@@ -23,7 +23,7 @@
 
 
 int main() {
-    retornoValorFuncion();
+    constYAsigCopiaProfundaYMovimiento();
     return 0;
 }
 
@@ -362,7 +362,7 @@ SmartPtrCopProfYMov<Recurso> generarRecurso() {
 
 void constYAsigCopiaProfundaYMovimiento() {
     SmartPtrCopProfYMov<Recurso> r;
-    r = generarRecurso(); // Despues de ejecutar generarRecurso() llama a la sobreescritura de asignación por movimiento (r-value)
+    r = generarRecurso(); // Despues de ejecutar generarRecurso() llama a la sobreescritura de asignación por movimiento de SmartPtrCopProfYMov (r-value)
 
     /*
     SmartPtrCopProfYMov<Recurso> r2 = generarRecurso(); // De esta forma el 'return recurso' se asigna directamente a r2
