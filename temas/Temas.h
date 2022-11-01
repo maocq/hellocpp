@@ -87,6 +87,7 @@ void constYAsigCopiaProfunda();
 void constYAsigCopiaProfundaYMovimiento();
 void stdMove();
 void pasoParametrosPorCopia();
+void retornoValorFuncion();
 void pasoParametroPorReferencia();
 void pasoParametroPorReferenciaYRetornoNormal();
 void pasoParametroPorReferenciaYRetornoReferencia();

@@ -23,7 +23,7 @@
 
 
 int main() {
-    smartPointersRetornoParametro();
+    retornoValorFuncion();
     return 0;
 }
 
@@ -107,8 +107,8 @@ void intercambioPorMovimiento(T& a, T& b) {
 }                                                  // 8. Limpieza recurso 1 0x738abffcdc
 
 void stdMoveIntercambioPorMovimiento() {
-    RecursoL x {1 };                               // 1. Constructor recurso 1 0x738abffd1c
-    RecursoL y {2 };                               // 2. Constructor recurso 2 0x738abffd18
+    RecursoL x { 1 };                               // 1. Constructor recurso 1 0x738abffd1c
+    RecursoL y { 2 };                               // 2. Constructor recurso 2 0x738abffd18
 
     std::cout << "x " << x.getId() << std::endl;   // 3. x 1
     std::cout << "y " << y.getId() << std::endl;   // 4. y 2
@@ -218,6 +218,20 @@ void pasoParametroPorReferencia() {
     Limpieza recurso 2 0xa3933ff708
     Limpieza recurso 1 0xa3933ff70c
 */
+
+RecursoL funcionRetornoValor2() {
+    return { 1 } ;                                     // 1. Constructor recurso 1 0xc21fdff85c
+}
+
+RecursoL funcionRetornoValor1() {
+    RecursoL recurso { funcionRetornoValor2() };
+    return recurso;
+}
+
+void retornoValorFuncion() {
+    auto r = { funcionRetornoValor1() };
+    std::cout << "end " << std::endl;                   // 2. end
+}                                                       // 3. Limpieza recurso 1 0xc21fdff85c
 
 RecursoL funcionPorCopia(RecursoL r) {        // 2. Constructor copia 1 from: 0xe40b9ff6f8 to: 0xe40b9ff6fc
     std::cout << "function " << std::endl;    // 3. function
