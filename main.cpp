@@ -364,6 +364,8 @@ void constYAsigCopiaProfundaYMovimiento() {
     SmartPtrCopProfYMov<Recurso> r;
     r = generarRecurso(); // Despues de ejecutar generarRecurso() llama a la sobreescritura de asignación por movimiento de SmartPtrCopProfYMov (r-value)
 
+    //SmartPtrCopProfYMov<Recurso> r { generarRecurso() }; // De esta forma se asigna directamente el resultado de generarRecurso() a 'r'
+
     /*
     SmartPtrCopProfYMov<Recurso> r2 = generarRecurso(); // De esta forma el 'return recurso' se asigna directamente a r2
     */
