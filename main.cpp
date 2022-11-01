@@ -229,7 +229,7 @@ RecursoL funcionRetornoValor1() {
 }
 
 void retornoValorFuncion() {
-    auto r = { funcionRetornoValor1() };
+    RecursoL r { funcionRetornoValor1() };
     std::cout << "end " << std::endl;                   // 2. end
 }                                                       // 3. Limpieza recurso 1 0xc21fdff85c
 
