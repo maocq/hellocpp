@@ -23,9 +23,45 @@
 
 
 int main() {
-    constYAsigCopiaProfundaYMovimiento();
+    smartPointerSharedPtrMakeShared();
     return 0;
 }
+
+void smartPointerSharedPtrMakeShared() {
+    auto ptr1 { std::make_shared<RecursoL>(9) };                      // 1. Constructor recurso 9 0x1ce9b961b90
+    {
+        auto ptr2 { ptr1 };
+        std::cout << "Count: " << ptr2.use_count() << std::endl;      // 2. Count: 2
+        std::cout << "Count: " << ptr1.use_count() << std::endl;      // 3. Count: 2
+    }
+    std::cout << "Count: " << ptr1.use_count() << std::endl;          // 4. Count: 1
+}                                                                     // 5. Limpieza recurso 9 0x1ce9b961b90
+
+void erroresEnSmartPointerSharedPtr() {
+    RecursoL* recurso { new RecursoL };                               // 1. Constructor recurso 0 0x19df5931b80
+    std::shared_ptr<RecursoL> ptr1 { recurso };
+    {
+        std::shared_ptr<RecursoL> ptr2 { recurso }; // Generará error, ptr1 y ptr2 apuntan al mismo recurso pero no se conocen
+        std::cout << "Count: " << ptr2.use_count() << std::endl;      // 2. Count: 1
+        std::cout << "Count: " << ptr1.use_count() << std::endl;      // 3. Count: 1
+    }                                                                 // 4. Limpieza recurso 0 0x19df5931b80
+    std::cout << "Count: " << ptr1.use_count() << std::endl;          // 5. Count: 1
+}                                                                     // 6. Limpieza recurso -174908304 0x19df5931b80
+
+void smartPointerSharedPtr() {
+    // Mulitples smart pointer apuntando a un mismo recurso
+    // Internamente realiza un seguimiento de cuantos punteros apuntan al mismo recurso (Dicho seguimiento genera una repercusión en el rendimiento)
+    // Mientras un shared_ptr apunte al recurso, éste no se desasignará
+
+    RecursoL* recurso { new RecursoL };                               // 1. Constructor recurso 0 0x1e09f391b80
+    std::shared_ptr<RecursoL> ptr1 { recurso };
+    {
+        std::shared_ptr<RecursoL> ptr2 { ptr1 };  // Para compartir el recurso se deben crear los shared_ptr a partir de otro shared_ptr ya existente
+        std::cout << "Count: " << ptr2.use_count() << std::endl;      // 2. Count: 2
+        std::cout << "Count: " << ptr1.use_count() << std::endl;      // 3. Count: 2
+    }
+    std::cout << "Count: " << ptr1.use_count() << std::endl;          // 4. Count: 1
+}                                                                     // 5. Limpieza recurso 0 0x1e09f391b80
 
 void tomarPropiedad(std::unique_ptr<RecursoL> r) {
     if (r)

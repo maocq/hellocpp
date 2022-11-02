@@ -99,5 +99,8 @@ void smartPointerUniquePtrMove();
 void erroresAlUsarSmartPointers();
 void smartPointersRetornoFuncion();
 void smartPointersRetornoParametro();
+void smartPointerSharedPtr();
+void erroresEnSmartPointerSharedPtr();
+void smartPointerSharedPtrMakeShared();
 
 #endif //HELLOCPP_TEMAS_H
