@@ -23,8 +23,14 @@
 
 
 int main() {
-    smartPointerSharedPtrMakeShared();
+    smartPointerSharedPtrInfo();
     return 0;
+}
+
+void smartPointerSharedPtrInfo() {
+    // std::shared_ptr necesita internamente dos punterso:
+    // Un puntero al recurso que está administrando y un segundo puntero al bloque de control
+    // La función make_shared usa una única asignación en lugar de dos
 }
 
 void smartPointerSharedPtrMakeShared() {

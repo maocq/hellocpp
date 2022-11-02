@@ -102,5 +102,6 @@ void smartPointersRetornoParametro();
 void smartPointerSharedPtr();
 void erroresEnSmartPointerSharedPtr();
 void smartPointerSharedPtrMakeShared();
+void smartPointerSharedPtrInfo();
 
 #endif //HELLOCPP_TEMAS_H
