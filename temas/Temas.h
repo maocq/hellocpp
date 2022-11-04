@@ -98,7 +98,7 @@ void smartPointerUniquePtr();
 void smartPointerUniquePtrMove();
 void erroresAlUsarSmartPointers();
 void smartPointersRetornoFuncion();
-void smartPointersRetornoParametro();
+void smartPointersPasoParametro();
 void smartPointerSharedPtr();
 void erroresEnSmartPointerSharedPtr();
 void smartPointerSharedPtrMakeShared();

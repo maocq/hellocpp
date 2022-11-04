@@ -74,7 +74,7 @@ void tomarPropiedad(std::unique_ptr<RecursoL> r) {
         std::cout << "id: " << r->getId() << std::endl;       // 2. id: 9
 }                                                             // 3. Limpieza recurso 9 0x29497001b80
 
-void smartPointersRetornoParametro() {
+void smartPointersPasoParametro() {
     auto ptr { std::make_unique<RecursoL>(9) };               // 1. Constructor recurso 9 0x29497001b80
 
     //tomarPropiedad(ptr); // No compila, la asignación por copia está deshabilitada
