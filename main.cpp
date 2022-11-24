@@ -594,16 +594,16 @@ struct DataX {
 
 void inicioConthreads() {
     {
-        DataX x { 4, 3 };                                                     // 0xbd47ffa00
+        DataX x { 4, 3 };                                                     // 1. 0xbd47ffa00
         auto f = [=]() {
-            // x;                                                            // 0x1debd4d1b88
+            // x;                                                             // 5. 0x1debd4d1b88
             std::cout << "Number " << x.number << std::endl;
         };
         std::thread my_thread(f);
         my_thread.detach();
-    } // x es limpiada
-    DataX y { 1, 2 };                                                         // 0xbd47ffa08
-    std::cout << "end" << std::endl;
+    }                                                                         // 2. x es liberada (0xbd47ffa00)
+    DataX y { 1, 2 };                                                         // 3. 0xbd47ffa08
+    std::cout << "end" << std::endl;                                          // 4. end
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 }
