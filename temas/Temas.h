@@ -80,6 +80,7 @@ void excepcionesCatchAll();
 void clasesException();
 void myException();
 void exceptionesReThrowing();
+void inicioConthreads();
 void punterosInteligentes();
 void semanticaMovimiento();
 void referenciaLValueYRValue();

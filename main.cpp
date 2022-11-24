@@ -3,6 +3,7 @@
 #include <functional>
 #include <cassert>
 #include <memory>
+#include <thread>
 #include "temas/Temas.h"
 #include "sumar/Sumar.h"
 #include "namespaces/Uno.h"
@@ -23,7 +24,8 @@
 
 
 int main() {
-    smartPointerSharedPtrInfo();
+    //smartPointerSharedPtrInfo();
+    inicioConthreads();
     return 0;
 }
 
@@ -585,6 +587,27 @@ void punterosInteligentes() {
     */
 }
 
+struct DataX {
+    int id {};
+    int number {};
+};
+
+void inicioConthreads() {
+    {
+        DataX x { 4, 3 };                                                     // 0xbd47ffa00
+        auto f = [=]() {
+            // x;                                                            // 0x1debd4d1b88
+            std::cout << "Number " << x.number << std::endl;
+        };
+        std::thread my_thread(f);
+        my_thread.detach();
+    } // x es limpiada
+    DataX y { 1, 2 };                                                         // 0xbd47ffa08
+    std::cout << "end" << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+}
+
 void exceptionesReThrowing() {
     try {
         throw -1;
@@ -1118,7 +1141,9 @@ void lambdasClausulaCaptura() {
 void lambdas() {
     auto x = []() {};
     auto y { [](int n) -> bool { return n == 4; } };  //El compilador genera un tipo unico para ella
-    std::function z { [](int n) { return n == 4; } };  //Se puede almacenar en std::function
+    std::function<bool(int)> z { [](int n) { return n == 4; } };  //Se puede almacenar en std::function
+    bool (*w)(int) { [](int n) { return n == 4; } };  // Con puntero a función
+
 
     std::vector<int> v {7, 2, 1, 4, 5};
     auto res1 { std::find_if(v.begin(), v.end(), [](int n) { return n == 4; }) };
