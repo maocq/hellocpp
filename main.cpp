@@ -30,8 +30,23 @@
 
 
 int main() {
-    stdQueue();
+    stdPriorityQueue();
     return 0;
+}
+
+void stdPriorityQueue() {
+    std::priority_queue<int> queue;
+    queue.push(10);
+    queue.push(30);
+    queue.push(1);
+
+    queue.pop();
+
+    while (!queue.empty()) {
+        std::cout << queue.top() << std::endl;
+        queue.pop();
+    }
+    // 10, 1
 }
 
 void stdQueue() { // Contenedor adaptativo
