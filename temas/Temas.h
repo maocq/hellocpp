@@ -104,5 +104,13 @@ void smartPointerSharedPtr();
 void erroresEnSmartPointerSharedPtr();
 void smartPointerSharedPtrMakeShared();
 void smartPointerSharedPtrInfo();
+void smartPointerWeakPtr();
+void stlStdVector();
+void stdDeque();
+void stdList();
+void stdSet();
+void stdMap();
+void stdStack();
+void stdQueue();
 
 #endif //HELLOCPP_TEMAS_H

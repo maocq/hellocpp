@@ -4,6 +4,12 @@
 #include <cassert>
 #include <memory>
 #include <thread>
+#include <deque>
+#include <list>
+#include <set>
+#include <map>
+#include <stack>
+#include <queue>
 #include "temas/Temas.h"
 #include "sumar/Sumar.h"
 #include "namespaces/Uno.h"
@@ -24,9 +30,111 @@
 
 
 int main() {
-    //smartPointerSharedPtrInfo();
-    inicioConthreads();
+    stdQueue();
     return 0;
+}
+
+void stdQueue() { // Contenedor adaptativo
+    std::queue<int> queue;
+    queue.push(21);
+    queue.push(22);
+    queue.push(23);
+
+    queue.pop();
+
+    while (!queue.empty()) {
+        std::cout << queue.front() << std::endl;
+        queue.pop();
+    }
+    // 22, 23
+}
+
+void stdStack() { // Contenedor adaptativo
+    std::stack<int> stack;
+    stack.push(21);
+    stack.push(22);
+    stack.push(23);
+
+    stack.pop();
+
+    while (!stack.empty()) {
+        std::cout << stack.top() << std::endl;
+        stack.pop();
+    }
+    // 22, 21
+}
+
+void stdMap() { // Contenedor asociativo
+    std::map<int, std::string> map;
+    map.insert(std::pair<int, std::string>(1, "A"));
+    map.insert(std::pair<int, std::string>(2, "B"));
+    map.insert(std::pair<int, std::string>(3, "C"));
+
+    std::cout << "Size " << map.size() << std::endl;
+
+    /*
+    for (std::map<int, std::string>::iterator it = map.begin(); it != map.end(); ++it)
+        std::cout << it->first << " : " << it->second << std::endl;
+    */
+    for (auto& it : map) {
+        std::cout << it.first << " : " << it.second << std::endl;
+    }
+}
+
+void stdSet() { // Contenedor asociativo
+    std::set<char> set;
+    set.insert('G');
+    set.insert('F');
+    set.insert('G');
+    set.insert('A');
+
+    for (auto& str : set) {
+        std::cout << str << std::endl; // A, F, G
+    }
+}
+
+void stdList() { // Contenedor secuencial
+    std::list<int> list { 3, 5, 7, 11 };
+    list.push_front(1);
+    list.push_back(13);
+
+    const std::list<int>::iterator &b = list.begin();
+    const std::list<int>::iterator &e = list.end();
+
+    const std::list<int>::iterator iterador = std::find(list.begin(), list.end(), 7);
+    if (iterador != list.end())
+        list.insert(iterador, 6);
+
+    for (int i : list)
+        std::cout << i << std::endl;
+}
+
+void stdDeque() { // Contenedor secuencial
+    std::deque<int> deq;
+    for (int i = 0; i < 3; ++i) {
+        deq.push_back(i);
+        deq.push_front(10 - i);
+    }
+    /*
+    for (int i = 0; i < deq.size(); ++i)
+        std::cout << deq[i] << std::endl;
+    */
+
+    for (int i : deq)
+        std::cout << i << std::endl;
+}
+
+void stlStdVector() { // Contenedor secuencial
+    std::vector<int> vector;
+    for (int i = 0; i < 6; ++i)
+        vector.push_back(i * 2);
+
+    for (int i : vector)
+        std::cout << i << std::endl;
+}
+
+void smartPointerWeakPtr() {
+    // weak_ptr a shared_ptr con la función .lock()
 }
 
 void smartPointerSharedPtrInfo() {
