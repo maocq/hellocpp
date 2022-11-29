@@ -10,6 +10,7 @@
 #include <map>
 #include <stack>
 #include <queue>
+#include <numeric>
 #include "temas/Temas.h"
 #include "sumar/Sumar.h"
 #include "namespaces/Uno.h"
@@ -30,8 +31,36 @@
 
 
 int main() {
-    iteradores();
+    algoritmos();
     return 0;
+}
+
+void algoritmos() {
+    // https://en.cppreference.com/w/cpp/algorithm
+    // https://hackingcpp.com/index.html
+    std::list<int> list(5);
+    std::iota(list.begin(), list.end(), 1); //Poblamos 'list' con números a partir de 1
+
+    std::list<int> list2 { 5, 4, 8, 10 };
+
+    //const std::list<int>::iterator &min = ...
+    auto min = std::min_element(list2.begin(), list2.end());
+    auto max = std::max_element(list2.begin(), list2.end());
+
+    std::cout << "Min: " << *min << " Max: " << *max << std::endl;
+
+    /*
+     * Erase
+     */
+    std::vector<int> v{ 7,9,3,5,3,2,4,1,8,0 };
+    //                     |         |
+    auto min_ptr = min_element(begin(v) + 2, begin(v) + 7);
+    std::cout << *min_ptr << '\n'; // 2
+    v.erase(min_ptr);
+
+    for (auto c : v)
+        std::cout << c << ' '; // 7 9 3 5 3 4 1 8 0
+    std::cout << '\n';
 }
 
 void iteradores() {

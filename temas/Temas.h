@@ -114,5 +114,6 @@ void stdStack();
 void stdQueue();
 void stdPriorityQueue();
 void iteradores();
+void algoritmos();
 
 #endif //HELLOCPP_TEMAS_H
