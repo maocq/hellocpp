@@ -30,8 +30,42 @@
 
 
 int main() {
-    stdPriorityQueue();
+    iteradores();
     return 0;
+}
+
+void iteradores() {
+    /*
+     containter::iterator  (Es un puntero a un elemento del contendor y un grupo de operadores sobrecargados)
+     Operator*   -> Operador de indirección
+     Operator++  -> Operador de incremento y decremento (--)
+     Operator==  -> Operador de igualdad o desigualdad (!-)
+     Operator=   -> Operador de asignación, indirecciona y asigna
+     */
+
+    std::list<int> list;
+    for (int i = 0; i < 5; ++i)
+        list.push_back(i);
+
+    std::list<int>::const_iterator it;
+    it = list.cbegin();
+    while (it != list.cend()) {
+        std::cout << *it << std::endl;
+        ++it;
+    }
+
+    // Map
+    std::map<int, std::string> map;
+    //map.insert(std::pair<int, std::string>(4, "A"));
+    map.insert(std::make_pair(4, "A"));
+    map.insert(std::make_pair(2, "B"));
+    map.insert(std::make_pair(3, "C"));
+
+    auto itm { map.cbegin() };
+    while (itm != map.cend()) {
+        std::cout << itm->first << ":" << itm->second << std::endl;
+        ++itm;
+    }
 }
 
 void stdPriorityQueue() {

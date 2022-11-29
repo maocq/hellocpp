@@ -113,5 +113,6 @@ void stdMap();
 void stdStack();
 void stdQueue();
 void stdPriorityQueue();
+void iteradores();
 
 #endif //HELLOCPP_TEMAS_H
