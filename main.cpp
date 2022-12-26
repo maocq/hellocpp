@@ -31,8 +31,29 @@
 
 
 int main() {
-    algoritmos();
+    streamEstiloCpp();
     return 0;
+}
+
+void streamEstiloCpp() {
+    std::cout << "Escribe un texto: ";
+    std::string strBuf;
+    std::getline(std::cin, strBuf);
+    std::cout << strBuf << '\n';
+}
+
+void streamEstiloC() {
+    char strBuf[100];
+    std::cout << "Escribe un texto: ";
+    std::cin.getline(strBuf, 100);
+    std::cout << "-> " << strBuf << '\n';
+
+    std::cout << std::cin.gcount() << " caracteres ingresados" << '\n';
+
+
+    std::cout << "Escribe otro texto: ";
+    std::cin.getline(strBuf, 100);
+    std::cout << "-> " << strBuf << '\n';
 }
 
 void algoritmos() {

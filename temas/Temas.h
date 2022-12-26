@@ -115,5 +115,7 @@ void stdQueue();
 void stdPriorityQueue();
 void iteradores();
 void algoritmos();
+void streamEstiloC();
+void streamEstiloCpp();
 
 #endif //HELLOCPP_TEMAS_H
