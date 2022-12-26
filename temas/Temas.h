@@ -117,5 +117,8 @@ void iteradores();
 void algoritmos();
 void streamEstiloC();
 void streamEstiloCpp();
+void streamANumeroProblema();
+void iostreamFlags();
+void iostreamManipuladores();
 
 #endif //HELLOCPP_TEMAS_H

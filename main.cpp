@@ -31,8 +31,41 @@
 
 
 int main() {
-    streamEstiloCpp();
+    iostreamManipuladores();
     return 0;
+}
+
+void iostreamManipuladores() {
+    std::cout << std::hex << 27 << '\n';  // imprime 27 en hex
+    std::cout << 28 << '\n';              // seguimos con hex
+    std::cout << std::dec << 29 << '\n';  // vuelta a decimal
+}
+
+void iostreamFlags() {
+    std::cout.setf(std::ios::showpos); // Signo positivo en los numeros
+
+    //std::cout.setf(std::ios::showpos | std::ios::uppercase); // Varios flags
+    //std::cout.unsetf(std::ios::showpos); // Desactivar
+    //std::cout.setf(std::ios::hex, std::ios::basefield); // Hexadecimal
+
+    std::cout << 27 << '\n';
+}
+
+void streamANumeroProblema() {
+    int num;
+    char name[100];
+
+    std::cout << "Escribe tu edad:\n";
+    std::cin >> num;
+    // Se genera un inconveniente, ya que queda un \n en el buffer
+
+    //std::cin.ignore(); // Elimina el primer caracter del buffer
+    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Otro ejemplo
+
+    std::cout << "Escribe tu nombre:\n";
+    std::cin.getline(name, 100);
+
+    std::cout << "Nombre: " << name << " edad: " << num << std::endl;
 }
 
 void streamEstiloCpp() {
