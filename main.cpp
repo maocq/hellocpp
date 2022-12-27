@@ -3,6 +3,7 @@
 #include <functional>
 #include <cassert>
 #include <cctype>
+#include <fstream>
 #include <memory>
 #include <thread>
 #include <deque>
@@ -13,6 +14,7 @@
 #include <queue>
 #include <numeric>
 #include <charconv>
+#include <optional>
 #include "temas/Temas.h"
 #include "sumar/Sumar.h"
 #include "namespaces/Uno.h"
@@ -33,9 +35,24 @@
 
 
 int main() {
-    opcionalEjemplo();
+    manejoArchivos();
     return 0;
 }
+
+void manejoArchivos() { // fstream, ifstream, ofstream
+    setlocale(LC_ALL, "es_ES.UTF-8");
+
+    std::fstream archivo{ "../hola.txt" };  // Si no existe lo creará
+    if (!archivo.is_open())
+        throw std::runtime_error("Error al abrir archivo");
+
+    std::string linea;
+    while (std::getline(archivo, linea)) {
+        std::cout << linea << "\n";
+    }
+
+    //archivo.close(); // Puede cerrarse explícitamente
+} // El archivo es cerrado implícitamente por el destructor de fstream
 
 std::optional<int> textoANumero(std::string_view num) {
     auto end { num.data() + num.length() };

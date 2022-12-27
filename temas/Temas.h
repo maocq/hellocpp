@@ -124,5 +124,6 @@ void validacionEntradasTexto();
 void validacionEntradasNumericas();
 void opcional();
 void opcionalEjemplo();
+void manejoArchivos();
 
 #endif //HELLOCPP_TEMAS_H
