@@ -62,6 +62,7 @@ void hilosConObjetosDeFuncionOFunctores() {
 
     Functor f { 2, 4 };
     std::thread t2{ f };
+    //std::thread t2{ std::ref(f) }; //Pasar una referencia en lugar de una copia
 
     t1.join();
     t2.join();
