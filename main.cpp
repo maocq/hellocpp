@@ -2,6 +2,7 @@
 #include <vector>
 #include <functional>
 #include <cassert>
+#include <cctype>
 #include <memory>
 #include <thread>
 #include <deque>
@@ -31,8 +32,55 @@
 
 
 int main() {
-    iostreamManipuladores();
+    opcional();
     return 0;
+}
+
+std::optional<int> fooOptional(int num) {
+    if (num < 18)
+        return {};
+    else
+        return num;
+}
+
+void opcional() {
+    auto res { fooOptional(21) };
+    if (res)
+        std::cout << "Valor: " << *res << '\n';
+
+    std::cout << "end!" << '\n';
+}
+
+void validacionEntradasNumericas() {
+    int numero{};
+
+    std::cout << "Escribe tu edad: ";
+    std::cin >> numero;
+    if (std::cin.fail()) {
+        std::cin.clear(); // Restablecer el bitstate del stream a goodbit para poder usar ignore()
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiamos el mal input desde el stream
+        std::cout << "Error" << '\n';
+        return;
+    }
+
+    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el resto del buffer
+    std::cout << "Numero: " << numero << '\n';
+}
+
+bool esNombreValido(std::string_view nombre) {
+    return std::all_of(nombre.begin(), nombre.end(), [](char ch) {
+       return (std::isalpha(ch) || std::isspace(ch));
+    });
+}
+
+void validacionEntradasTexto() {
+    std::string nombre{};
+    do {
+        std::cout << "Escribe tu nombre: ";
+        std::getline(std::cin, nombre);
+    } while (!esNombreValido(nombre));
+
+    std::cout << "Hola " << nombre << "\n";
 }
 
 void iostreamManipuladores() {

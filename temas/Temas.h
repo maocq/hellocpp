@@ -120,5 +120,8 @@ void streamEstiloCpp();
 void streamANumeroProblema();
 void iostreamFlags();
 void iostreamManipuladores();
+void validacionEntradasTexto();
+void validacionEntradasNumericas();
+void opcional();
 
 #endif //HELLOCPP_TEMAS_H
