@@ -127,5 +127,6 @@ void opcionalEjemplo();
 void manejoArchivos();
 void manejoArchivosModos();
 void punterosDeArchivos();
+void eliminacionArchivos();
 
 #endif //HELLOCPP_TEMAS_H

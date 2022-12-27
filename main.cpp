@@ -35,18 +35,29 @@
 
 
 int main() {
-    manejoArchivos();
+    eliminacionArchivos();
     return 0;
+}
+
+void eliminacionArchivos() {
+    if (remove("algo.txt") != 0)
+        std::cout << "Error al borrar el archivo" << "\n";
+    else
+        std::cout << "El archivo fue borrado exitosamente" << "\n";
 }
 
 void punterosDeArchivos() {
     std::ifstream inf{ "../hola.txt" };
 
     inf.seekg(14, std::ios::cur); // Mueve puntero hacia adelante 14 bytes desde la posición actual
-    inf.seekg(-18, std::ios::cur); // Mueve puntero hacia atrás 18 bytes desde la posición actual
+    inf.seekg(-8, std::ios::cur); // Mueve puntero hacia atrás 8 bytes desde la posición actual
     inf.seekg(22, std::ios::beg); // Mueve puntero al byte 22 en el archivo
     inf.seekg(24); // Mueve puntero al byte 24 en el archivo
     inf.seekg(-28, std::ios::end); // mueve puntero al byte 28 contando desde el final del archivo
+
+    //inf.tellg(); // Retorna la posición actual del archivo
+    std::cout << ": " << inf.tellg() << "\n";
+    //inf.seekg(inf.tellg(), std::ios::beg);
 }
 
 void manejoArchivosModos() {
