@@ -39,6 +39,28 @@ int main() {
     return 0;
 }
 
+void punterosDeArchivos() {
+    std::ifstream inf{ "../hola.txt" };
+
+    inf.seekg(14, std::ios::cur); // Mueve puntero hacia adelante 14 bytes desde la posición actual
+    inf.seekg(-18, std::ios::cur); // Mueve puntero hacia atrás 18 bytes desde la posición actual
+    inf.seekg(22, std::ios::beg); // Mueve puntero al byte 22 en el archivo
+    inf.seekg(24); // Mueve puntero al byte 24 en el archivo
+    inf.seekg(-28, std::ios::end); // mueve puntero al byte 28 contando desde el final del archivo
+}
+
+void manejoArchivosModos() {
+    std::fstream archivo{ "../hola.txt", std::ios::out | std::ios::in };
+    /*
+     app      Modo añadir
+     ate      Final del archivo
+     binary   Modo binario
+     in       Modo lectura (Predeterminado para ifstream)
+     out      Modo escritura (Predeterminado para ofstream)
+     trunc    Borra el archivo si ya existe
+     */
+}
+
 void manejoArchivos() { // fstream, ifstream, ofstream
     setlocale(LC_ALL, "es_ES.UTF-8");
 

@@ -125,5 +125,7 @@ void validacionEntradasNumericas();
 void opcional();
 void opcionalEjemplo();
 void manejoArchivos();
+void manejoArchivosModos();
+void punterosDeArchivos();
 
 #endif //HELLOCPP_TEMAS_H
