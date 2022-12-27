@@ -123,5 +123,6 @@ void iostreamManipuladores();
 void validacionEntradasTexto();
 void validacionEntradasNumericas();
 void opcional();
+void opcionalEjemplo();
 
 #endif //HELLOCPP_TEMAS_H

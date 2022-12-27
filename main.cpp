@@ -12,6 +12,7 @@
 #include <stack>
 #include <queue>
 #include <numeric>
+#include <charconv>
 #include "temas/Temas.h"
 #include "sumar/Sumar.h"
 #include "namespaces/Uno.h"
@@ -32,8 +33,25 @@
 
 
 int main() {
-    opcional();
+    opcionalEjemplo();
     return 0;
+}
+
+std::optional<int> textoANumero(std::string_view num) {
+    auto end { num.data() + num.length() };
+    int resultado{};
+    if(std::from_chars(num.data(), end, resultado).ptr != end)
+        return {};
+
+    return resultado;
+}
+
+void opcionalEjemplo() {
+    std::string num = "34";
+    auto valor { textoANumero(num) };
+
+    if (valor.has_value())
+        std::cout << "Valor: " << valor.value() << '\n';
 }
 
 std::optional<int> fooOptional(int num) {
