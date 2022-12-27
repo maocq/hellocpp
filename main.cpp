@@ -35,8 +35,48 @@
 
 
 int main() {
-    eliminacionArchivos();
+    hilosConObjetosDeFuncionOFunctores();
     return 0;
+}
+
+class Functor {
+private:
+    int m_id;
+    int m_limit;
+
+public:
+    Functor(int id, int limit) : m_id{ id }, m_limit{ limit } { }
+
+    void operator()() const {
+        for (int i{ 0 }; i < m_limit; ++i)
+            std::cout << "Contador " << m_id << " tiene un valor " << i << std::endl;
+    }
+};
+
+void hilosConObjetosDeFuncionOFunctores() {
+    /*
+    Functor functor { 2, 4 };
+    functor(); // Llama el método  void operator()() const...
+    */
+    std::thread t1{ Functor{ 1, 6 } };
+
+    Functor f { 2, 4 };
+    std::thread t2{ f };
+
+    t1.join();
+    t2.join();
+}
+
+void hfuncion(int id, int limit) {
+    for (int i{ 0 }; i < limit; ++i)
+        std::cout << "Contador " << id << " tiene un valor " << i << '\n';
+}
+
+void hilos() {
+    std::thread t1{ hfuncion, 1, 6 };
+    std::thread t2{ hfuncion, 2, 4 };
+    t1.join();
+    t2.join();
 }
 
 void eliminacionArchivos() {

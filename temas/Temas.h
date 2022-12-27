@@ -128,5 +128,7 @@ void manejoArchivos();
 void manejoArchivosModos();
 void punterosDeArchivos();
 void eliminacionArchivos();
+void hilos();
+void hilosConObjetosDeFuncionOFunctores();
 
 #endif //HELLOCPP_TEMAS_H
