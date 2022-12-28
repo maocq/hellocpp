@@ -35,8 +35,73 @@
 
 
 int main() {
-    hilosConObjetosDeFuncionOFunctores();
+    threadLocal();
     return 0;
+}
+
+void hilosjThread() {
+    // Usa RAII para vincular un objeto a su destructor (Permite la cancelación cooperativa)
+    /*
+    std::jthread job{ [](std::stop_token token) { //Vigila avisos de detención del subproceso
+            int contador = 0;
+            while (!token.stop_requested() && contador < 10) { // Verifica si se ha lanzado un aviso de detención
+                std::cout << "Iteracion del bucle: " << contador << std::endl;
+                contador++;
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+        } };
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    job.request_stop();
+    */
+};
+
+int k{};
+thread_local int n{};
+
+void fThread(int id) {
+    std::cout << "Thread " << id << " k=" << k << " n=" << n << '\n';
+    ++k;
+    ++n;
+}
+
+void threadLocal() {
+    // Con el uso de thread_local se puede marcar cualquier variable para que sea independiente en cada subproceso
+    // Cada subproceso tendra su copia unica de la variable con duración igual a la del subproceso
+    std::thread t1{ fThread, 1 };
+    t1.join();
+
+    std::thread t2{ fThread, 2 };
+    t2.join();
+    //Thread 1 k=0 n=0
+    //Thread 2 k=1 n=0
+}
+
+class ClaseFM {
+private:
+    int m_id;
+public:
+    ClaseFM(int id) : m_id{id } { }
+    void proceso() { std::cout << "Valor " << m_id << std::endl; }
+};
+
+void hilosConFuncionesMiembro() {
+    ClaseFM instancia { 9 };
+    std::thread t{ &ClaseFM::proceso, &instancia };
+    // El primer parametro (&ClaseFM::proceso) es la dirección en memoria de la función miembro
+    // El segundo parametro es la dirección en memoria del objeto concreto
+    t.join();
+}
+
+void hilosConLambdas() {
+    int id{ 1 };
+    int numIteraciones{ 5 };
+
+    std::thread t1{ [id, numIteraciones] {
+        for (int i { 0 }; i < numIteraciones; ++i)
+            std::cout << "Contador " << id << " tiene valor " << i << std::endl;
+    } };
+    t1.join();
 }
 
 class Functor {

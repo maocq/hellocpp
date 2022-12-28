@@ -130,5 +130,9 @@ void punterosDeArchivos();
 void eliminacionArchivos();
 void hilos();
 void hilosConObjetosDeFuncionOFunctores();
+void hilosConLambdas();
+void hilosConFuncionesMiembro();
+void threadLocal();
+void hilosjThread();
 
 #endif //HELLOCPP_TEMAS_H
