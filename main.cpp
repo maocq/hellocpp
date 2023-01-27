@@ -36,7 +36,7 @@
 
 
 int main() {
-    variablesAtomicas();
+    punterosYReferenciasAtomicas();
     return 0;
 }
 
@@ -67,6 +67,21 @@ int main() {
 	}
 }
  */
+
+void punterosYReferenciasAtomicas() {
+    std::atomic<int*> p;
+    std::vector<int> v(3, 0);
+
+    p.store(&v[0]); // Inicializar el puntero atómico al primer elemento del vector
+
+    int* q = p.load(); // Leer el valor de p de forma atómica
+    (*q)++; // Incrementar el valor almacenado en la dirección de memoria a la que apunta el puntero
+    p.store(q + 1); // Modificar el valor de p de forma atómica (al siguiente elemento del vector)
+
+    std::cout << "Resultado = " << std::endl;
+
+    // Nota: Solo se pueden crear valores atomicos a smart pointer shared_ptr (std::atomic<std::shared_ptr<int>> ptr)
+}
 
 void aumentarValorAtomico(std::atomic<int>& contador) {
     for (int i{ 0 }; i < 100; ++i) {
@@ -534,7 +549,7 @@ void stdList() { // Contenedor secuencial
     std::list<int> list { 3, 5, 7, 11 };
     list.push_front(1);
     list.push_back(13);
-    //list.emplace_back(0);
+    //list.emplace_back(0); // emplace_back es más eficiente que push_back, ya que se construye primero en memoria sin necesidad de hacer una copia
 
     const std::list<int>::iterator &b = list.begin();
     const std::list<int>::iterator &e = list.end();

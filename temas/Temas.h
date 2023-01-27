@@ -137,5 +137,6 @@ void hilosjThread();
 void variablesAtomicas();
 void operacionesNoAtomicas();
 void operacionesAtomicas();
+void punterosYReferenciasAtomicas();
 
 #endif //HELLOCPP_TEMAS_H
