@@ -134,6 +134,7 @@ void hilosConLambdas();
 void hilosConFuncionesMiembro();
 void threadLocal();
 void hilosjThread();
+void variablesAtomicas();
 void operacionesNoAtomicas();
 void operacionesAtomicas();
 

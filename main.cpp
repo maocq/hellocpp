@@ -15,6 +15,7 @@
 #include <numeric>
 #include <charconv>
 #include <optional>
+#include <type_traits>
 #include "temas/Temas.h"
 #include "sumar/Sumar.h"
 #include "namespaces/Uno.h"
@@ -35,7 +36,7 @@
 
 
 int main() {
-    operacionesAtomicas();
+    variablesAtomicas();
     return 0;
 }
 
@@ -105,6 +106,20 @@ void operacionesNoAtomicas() {
         t.join();
 
     std::cout << "Resultado = " << contador << std::endl;
+}
+
+class TrivialmenteCopiable {
+    private: int m_int;
+};
+
+void variablesAtomicas() {
+    // Para usar variables atómicas con clases definidas por el usuario, la clase debe ser trivialmente copiable (Copiados mediante una simple asignación de memoria)
+    std::cout << std::is_trivially_copyable_v <TrivialmenteCopiable> << std::endl; // true
+
+    std::atomic<int> num { 5 };
+    int anterior = num.fetch_add(1);
+    std::cout << "Anterior = " << anterior << std::endl;  // 5
+    std::cout << "Actual = " << num << std::endl;         // 6
 }
 
 void hilosjThread() {
