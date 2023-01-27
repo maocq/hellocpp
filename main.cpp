@@ -35,8 +35,76 @@
 
 
 int main() {
-    threadLocal();
+    operacionesAtomicas();
     return 0;
+}
+
+/*
+#include <experimental/generator>
+#include <chrono>
+#include <iostream>
+
+std::experimental::generator<int> getGeneradorSecuencia( int ValorInicial, int numeroDeValores) {
+	for (int i{ ValorInicial }; i < ValorInicial + numeroDeValores; ++i) {
+		//Imprimir la hora local a la salida estándar
+		std::time_t tt{ std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) };
+		std::tm t;
+		localtime_s(&t, &tt);
+		std::cout << std::put_time(&t, "%H:%M:%S") << ": ";
+		// Enviar un valor al llamador y pausar la rutina.
+		co_yield i;
+	}
+}
+
+int main() {
+	auto gen{ getGeneradorSecuencia(10, 5) };
+	//std::experimental::generator<int> gen{ getGeneradorSecuencia(10, 5) };
+
+	for (const auto& valor : gen) {
+		std::cout << valor << " (Pulsa enter para el siguiente valor)";
+		std::cin.ignore();
+	}
+}
+ */
+
+void aumentarValorAtomico(std::atomic<int>& contador) {
+    for (int i{ 0 }; i < 100; ++i) {
+        ++contador;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+void operacionesAtomicas() {
+    std::atomic<int> contador{ 0 };
+    std::vector<std::thread> threads;
+
+    for (int i{ 0 }; i < 10; ++i)
+        threads.emplace_back(std::thread{ aumentarValorAtomico, std::ref(contador) }); // Pasar parametro como ref para que el valor no sea copiado
+
+    for (auto& t : threads)
+        t.join();
+
+    std::cout << "Resultado = " << contador << std::endl;
+}
+
+void aumentarValorNoAtomico(int& contador) {
+    for (int i{ 0 }; i < 100; ++i) {
+        ++contador;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+void operacionesNoAtomicas() {
+    int contador{ 0 };
+    std::vector<std::thread> threads;
+
+    for (int i{ 0 }; i < 10; ++i)
+        threads.emplace_back(std::thread{ aumentarValorNoAtomico, std::ref(contador) }); // Pasar parametro como ref para que el valor no sea copiado
+
+    for (auto& t : threads)
+        t.join();
+
+    std::cout << "Resultado = " << contador << std::endl;
 }
 
 void hilosjThread() {
@@ -350,7 +418,7 @@ void iteradores() {
 
     std::list<int> list;
     for (int i = 0; i < 5; ++i)
-        list.push_back(i);
+        list.push_back(i);   // push_back or emplace_back
 
     std::list<int>::const_iterator it;
     it = list.cbegin();
@@ -451,6 +519,7 @@ void stdList() { // Contenedor secuencial
     std::list<int> list { 3, 5, 7, 11 };
     list.push_front(1);
     list.push_back(13);
+    //list.emplace_back(0);
 
     const std::list<int>::iterator &b = list.begin();
     const std::list<int>::iterator &e = list.end();

@@ -134,5 +134,7 @@ void hilosConLambdas();
 void hilosConFuncionesMiembro();
 void threadLocal();
 void hilosjThread();
+void operacionesNoAtomicas();
+void operacionesAtomicas();
 
 #endif //HELLOCPP_TEMAS_H
