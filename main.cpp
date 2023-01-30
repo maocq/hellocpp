@@ -37,7 +37,7 @@
 
 
 int main() {
-    mutexTryLock();
+    mutexLockGuard();
     return 0;
 }
 
@@ -68,6 +68,17 @@ int main() {
 	}
 }
  */
+
+std::mutex mutex_c;
+
+void funcMutexLockGuard() {
+    std::lock_guard<std::mutex> guard(mutex_c);
+    std::cout << "Accediendo al recurso compartido" << std::endl;
+} // Se librera el bloqueo del mutex
+
+void mutexLockGuard() {
+    funcMutexLockGuard();
+}
 
 std::mutex mutex_b;
 
