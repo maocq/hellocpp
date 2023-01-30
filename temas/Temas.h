@@ -138,5 +138,7 @@ void variablesAtomicas();
 void operacionesNoAtomicas();
 void operacionesAtomicas();
 void punterosYReferenciasAtomicas();
+void exclusionMutuaMutex();
+void mutexTryLock();
 
 #endif //HELLOCPP_TEMAS_H

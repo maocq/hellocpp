@@ -12,6 +12,7 @@
 #include <map>
 #include <stack>
 #include <queue>
+#include <mutex>
 #include <numeric>
 #include <charconv>
 #include <optional>
@@ -36,7 +37,7 @@
 
 
 int main() {
-    punterosYReferenciasAtomicas();
+    mutexTryLock();
     return 0;
 }
 
@@ -68,6 +69,26 @@ int main() {
 }
  */
 
+std::mutex mutex_b;
+
+void mutexTryLock() {
+    if (mutex_b.try_lock()) {
+        std::cout << "Se ha adquirido el mutex" << std::endl;
+        mutex_b.unlock();
+    } else {
+        std::cout << "No se ha podido adquirir el mutex" << std::endl;
+    }
+}
+
+int contador_a { 0 };
+std::mutex contador_mutex_a;
+
+void exclusionMutuaMutex() {
+    contador_mutex_a.lock(); // Adquirir el mutex
+    ++contador_a; // Proteger la sección crítica
+    contador_mutex_a.unlock(); // Liberar el mutex
+}
+
 void punterosYReferenciasAtomicas() {
     std::atomic<int*> p;
     std::vector<int> v(3, 0);
@@ -81,6 +102,11 @@ void punterosYReferenciasAtomicas() {
     std::cout << "Resultado = " << std::endl;
 
     // Nota: Solo se pueden crear valores atomicos a smart pointer shared_ptr (std::atomic<std::shared_ptr<int>> ptr)
+
+    // ------------------------------------------------
+    int x = 0;
+    std::atomic_ref<int> atomicRef { x };
+    atomicRef = 10; // Asigna el valor de forma atómica
 }
 
 void aumentarValorAtomico(std::atomic<int>& contador) {
