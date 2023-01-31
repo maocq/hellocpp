@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <functional>
@@ -14,6 +15,7 @@
 #include <stack>
 #include <queue>
 #include <mutex>
+#include <ranges>
 #include <shared_mutex>
 #include <numeric>
 #include <charconv>
@@ -39,8 +41,50 @@
 
 
 int main() {
-    conceptosPersonalizados();
+    rangosProyecciones();
     return 0;
+}
+
+class PersonaA {
+public:
+    PersonaA(std::string nombre, std::string apellido)
+            : m_nombre{ std::move(nombre) }, m_apellido{ std::move(apellido) } { }
+
+    const std::string& getNombre() const { return m_nombre; }
+    const std::string& getApellido() const { return m_apellido; }
+
+private:
+    std::string m_nombre;
+    std::string m_apellido;
+};
+
+void rangosProyecciones() {
+    std::vector personas{ PersonaA{"Vicente", "Velarte"}, PersonaA{"Rosa", "Velarte"}, PersonaA{"Juan", "Monero"}, PersonaA{"Juan", "Rendero"} };
+    std::ranges::sort(personas, {}, [](const PersonaA& persona) { return std::pair{ persona.getNombre(), persona.getApellido() }; });
+
+    for (const auto& persona : personas)
+        std::cout << persona.getNombre() << ' ' << persona.getApellido() << '\n';
+}
+
+void rangos() { // Capa de abstracción sobre los iteradores
+    std::vector<int> datos{ 33, 11, 22 };
+    std::ranges::sort(datos);        // Los elementos deben estar contiguos en memoria, no aplica para std::list
+    for (const auto& i : datos) {
+        std::cout << i << " ";
+    }
+}
+
+void rangosContexto() {
+    std::vector<int> v = { 1, 2, 3, 4, 5 };
+    /* std::vector<int>::iterator it;
+    for (it = v.begin(); it != v.end(); ++it) {
+        std::cout << *it << " ";
+    }*/
+
+    // Bucle for-each: El contenedor debe contar con los métodos begin() y end()
+    for (int x : v) {
+        std::cout << x << " ";
+    }
 }
 
 template<typename T>
