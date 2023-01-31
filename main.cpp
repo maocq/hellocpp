@@ -13,6 +13,7 @@
 #include <stack>
 #include <queue>
 #include <mutex>
+#include <shared_mutex>
 #include <numeric>
 #include <charconv>
 #include <optional>
@@ -37,7 +38,7 @@
 
 
 int main() {
-    mutexLockGuard();
+    mutexLecturaEscritura();
     return 0;
 }
 
@@ -67,7 +68,33 @@ int main() {
 		std::cin.ignore();
 	}
 }
- */
+*/
+
+
+int obj_compartido = 0; // Objeto a proteger con un lock
+std::shared_mutex mutex_d;
+
+void leer_e_imprimir() {
+    std::shared_lock lock(mutex_d);
+    int valor = obj_compartido;
+    std::cout << "Valor del objeto compartido: " << obj_compartido << std::endl;
+}
+
+void escribir_valor(int nuevo_valor) {
+    std::unique_lock lock(mutex_d);
+    obj_compartido = nuevo_valor;
+}
+
+void mutexLecturaEscritura() {
+    std::thread t1(leer_e_imprimir);
+    std::thread t3(escribir_valor, 42);
+    std::thread t2(leer_e_imprimir);
+    std::thread t4(leer_e_imprimir);
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+}
 
 int valor_c = 0;
 std::mutex mutex_c;

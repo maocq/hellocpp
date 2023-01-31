@@ -141,5 +141,6 @@ void punterosYReferenciasAtomicas();
 void exclusionMutuaMutex();
 void mutexTryLock();
 void mutexLockGuard();
+void mutexLecturaEscritura();
 
 #endif //HELLOCPP_TEMAS_H
