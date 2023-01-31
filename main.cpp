@@ -61,6 +61,7 @@ private:
 void rangosProyecciones() {
     std::vector personas{ PersonaA{"Vicente", "Velarte"}, PersonaA{"Rosa", "Velarte"}, PersonaA{"Juan", "Monero"}, PersonaA{"Juan", "Rendero"} };
     std::ranges::sort(personas, {}, [](const PersonaA& persona) { return std::pair{ persona.getNombre(), persona.getApellido() }; });
+    //std::ranges::sort(personas, {}, &PersonaA::getNombre);
 
     for (const auto& persona : personas)
         std::cout << persona.getNombre() << ' ' << persona.getApellido() << '\n';
