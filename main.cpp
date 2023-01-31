@@ -69,15 +69,22 @@ int main() {
 }
  */
 
+int valor_c = 0;
 std::mutex mutex_c;
 
-void funcMutexLockGuard() {
-    std::lock_guard<std::mutex> guard(mutex_c);
-    std::cout << "Accediendo al recurso compartido" << std::endl;
+void actualizarValorC(int valor) {
+    std::lock_guard<std::mutex> lock(mutex_c);
+
+    valor_c = valor;
+    std::cout << "Actualizacion recurso compartido: " << valor_c << std::endl;
 } // Se librera el bloqueo del mutex
 
 void mutexLockGuard() {
-    funcMutexLockGuard();
+    std::thread t0 {actualizarValorC, 2};
+    std::thread t1 {actualizarValorC, 5};
+
+    t0.join();
+    t1.join();
 }
 
 std::mutex mutex_b;
