@@ -39,8 +39,19 @@
 
 
 int main() {
-    conceptos();
+    conceptosPersonalizados();
     return 0;
+}
+
+template<typename T>
+concept Numerico = std::integral<T> || std::floating_point<T>;
+
+//template<typename T> requires Numerico<T>
+template<Numerico T1, Numerico T2>
+auto multiplicar_p(T1 primero, T2 segundo) { return primero * segundo; }
+
+void conceptosPersonalizados() {
+    std::cout << multiplicar_p(4, 6.1) << "\n";
 }
 
 /*
@@ -49,12 +60,12 @@ T multiplicar(T primero, T segundo) { return primero * segundo; }
 */
 
 template<typename T> requires std::integral<T> || std::floating_point<T>  // Listado: https://en.cppreference.com/w/cpp/concepts
-T multiplicar(T primero, T segundo) { return primero * segundo; }
+T multiplicar_c(T primero, T segundo) { return primero * segundo; }
 
 void conceptos() { // Permite verificaciones de tipos en tiempo de compilación
 
-    std::cout << "4 x 6:      " << multiplicar(4, 6) << "\n";
-    std::cout << "7.25 x 2.0: " << multiplicar(7.25, 2.0) << "\n";
+    std::cout << "4 x 6:      " << multiplicar_c(4, 6) << "\n";
+    std::cout << "7.25 x 2.0: " << multiplicar_c(7.25, 2.0) << "\n";
     //auto resultado { multiplicar("1", "5") }; // Error de compilación
 }
 

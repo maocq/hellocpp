@@ -143,5 +143,6 @@ void mutexTryLock();
 void mutexLockGuard();
 void mutexLecturaEscritura();
 void conceptos();
+void conceptosPersonalizados();
 
 #endif //HELLOCPP_TEMAS_H
