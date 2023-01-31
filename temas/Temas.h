@@ -142,5 +142,6 @@ void exclusionMutuaMutex();
 void mutexTryLock();
 void mutexLockGuard();
 void mutexLecturaEscritura();
+void conceptos();
 
 #endif //HELLOCPP_TEMAS_H

@@ -3,6 +3,7 @@
 #include <functional>
 #include <cassert>
 #include <cctype>
+#include <concepts>
 #include <fstream>
 #include <memory>
 #include <thread>
@@ -38,8 +39,23 @@
 
 
 int main() {
-    mutexLecturaEscritura();
+    conceptos();
     return 0;
+}
+
+/*
+template<typename T>     // De esta forma solo evalua al momento de instanciar la función
+T multiplicar(T primero, T segundo) { return primero * segundo; }
+*/
+
+template<typename T> requires std::integral<T> || std::floating_point<T>  // Listado: https://en.cppreference.com/w/cpp/concepts
+T multiplicar(T primero, T segundo) { return primero * segundo; }
+
+void conceptos() { // Permite verificaciones de tipos en tiempo de compilación
+
+    std::cout << "4 x 6:      " << multiplicar(4, 6) << "\n";
+    std::cout << "7.25 x 2.0: " << multiplicar(7.25, 2.0) << "\n";
+    //auto resultado { multiplicar("1", "5") }; // Error de compilación
 }
 
 /*
@@ -86,8 +102,8 @@ void escribir_valor(int nuevo_valor) {
 }
 
 void mutexLecturaEscritura() {
-    std::thread t1(leer_e_imprimir);
-    std::thread t3(escribir_valor, 42);
+    std::thread t1(leer_e_imprimir);     // Bloqueo compartido
+    std::thread t3(escribir_valor, 42);  // Bloqueo exclusivo
     std::thread t2(leer_e_imprimir);
     std::thread t4(leer_e_imprimir);
     t1.join();
