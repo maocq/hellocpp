@@ -2,10 +2,29 @@
 # C++
 
 ```c++
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <functional>
 #include <cassert>
+#include <cctype>
+#include <concepts>
+#include <fstream>
+#include <memory>
+#include <thread>
+#include <deque>
+#include <list>
+#include <set>
+#include <map>
+#include <stack>
+#include <queue>
+#include <mutex>
+#include <ranges>
+#include <shared_mutex>
+#include <numeric>
+#include <charconv>
+#include <optional>
+#include <type_traits>
 #include "temas/Temas.h"
 #include "sumar/Sumar.h"
 #include "namespaces/Uno.h"
@@ -26,169 +45,962 @@
 
 
 int main() {
-    stdMoveIntercambioPorMovimiento();
+    rangosProyecciones();
     return 0;
 }
 
+class PersonaA {
+public:
+    PersonaA(std::string nombre, std::string apellido)
+            : m_nombre{ std::move(nombre) }, m_apellido{ std::move(apellido) } { }
+
+    const std::string& getNombre() const { return m_nombre; }
+    const std::string& getApellido() const { return m_apellido; }
+
+private:
+    std::string m_nombre;
+    std::string m_apellido;
+};
+
+void rangosProyecciones() {
+    std::vector personas{ PersonaA{"Vicente", "Velarte"}, PersonaA{"Rosa", "Velarte"}, PersonaA{"Juan", "Monero"}, PersonaA{"Juan", "Rendero"} };
+    std::ranges::sort(personas, {}, [](const PersonaA& persona) { return std::pair{ persona.getNombre(), persona.getApellido() }; });
+    //std::ranges::sort(personas, {}, &PersonaA::getNombre);
+
+    for (const auto& persona : personas)
+        std::cout << persona.getNombre() << ' ' << persona.getApellido() << '\n';
+}
+
+void rangos() { // Capa de abstracción sobre los iteradores
+    std::vector<int> datos{ 33, 11, 22 };
+    std::ranges::sort(datos);        // Los elementos deben estar contiguos en memoria, no aplica para std::list
+    for (const auto& i : datos) {
+        std::cout << i << " ";
+    }
+}
+
+void rangosContexto() {
+    std::vector<int> v = { 1, 2, 3, 4, 5 };
+    /* std::vector<int>::iterator it;
+    for (it = v.begin(); it != v.end(); ++it) {
+        std::cout << *it << " ";
+    }*/
+
+    // Bucle for-each: El contenedor debe contar con los métodos begin() y end()
+    for (int x : v) {
+        std::cout << x << " ";
+    }
+}
+
+template<typename T>
+concept Numerico = std::integral<T> || std::floating_point<T>;
+
+//template<typename T> requires Numerico<T>
+template<Numerico T1, Numerico T2>
+auto multiplicar_p(T1 primero, T2 segundo) { return primero * segundo; }
+
+void conceptosPersonalizados() {
+    std::cout << multiplicar_p(4, 6.1) << "\n";
+}
+
+/*
+template<typename T>     // De esta forma solo evalua al momento de instanciar la función
+T multiplicar(T primero, T segundo) { return primero * segundo; }
+*/
+
+template<typename T> requires std::integral<T> || std::floating_point<T>  // Listado: https://en.cppreference.com/w/cpp/concepts
+T multiplicar_c(T primero, T segundo) { return primero * segundo; }
+
+void conceptos() { // Permite verificaciones de tipos en tiempo de compilación
+
+    std::cout << "4 x 6:      " << multiplicar_c(4, 6) << "\n";
+    std::cout << "7.25 x 2.0: " << multiplicar_c(7.25, 2.0) << "\n";
+    //auto resultado { multiplicar("1", "5") }; // Error de compilación
+}
+
+/*
+#include <experimental/generator>
+#include <chrono>
+#include <iostream>
+
+std::experimental::generator<int> getGeneradorSecuencia( int ValorInicial, int numeroDeValores) {
+	for (int i{ ValorInicial }; i < ValorInicial + numeroDeValores; ++i) {
+		//Imprimir la hora local a la salida estándar
+		std::time_t tt{ std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) };
+		std::tm t;
+		localtime_s(&t, &tt);
+		std::cout << std::put_time(&t, "%H:%M:%S") << ": ";
+		// Enviar un valor al llamador y pausar la rutina.
+		co_yield i;
+	}
+}
+
+int main() {
+	auto gen{ getGeneradorSecuencia(10, 5) };
+	//std::experimental::generator<int> gen{ getGeneradorSecuencia(10, 5) };
+
+	for (const auto& valor : gen) {
+		std::cout << valor << " (Pulsa enter para el siguiente valor)";
+		std::cin.ignore();
+	}
+}
+*/
+
+
+int obj_compartido = 0; // Objeto a proteger con un lock
+std::shared_mutex mutex_d;
+
+void leer_e_imprimir() {
+    std::shared_lock lock(mutex_d);
+    int valor = obj_compartido;
+    std::cout << "Valor del objeto compartido: " << obj_compartido << std::endl;
+}
+
+void escribir_valor(int nuevo_valor) {
+    std::unique_lock lock(mutex_d);
+    obj_compartido = nuevo_valor;
+}
+
+void mutexLecturaEscritura() {
+    std::thread t1(leer_e_imprimir);     // Bloqueo compartido
+    std::thread t3(escribir_valor, 42);  // Bloqueo exclusivo
+    std::thread t2(leer_e_imprimir);
+    std::thread t4(leer_e_imprimir);
+    t1.join();
+    t2.join();
+    t3.join();
+    t4.join();
+}
+
+int valor_c = 0;
+std::mutex mutex_c;
+
+void actualizarValorC(int valor) {
+    std::lock_guard<std::mutex> lock(mutex_c);
+
+    valor_c = valor;
+    std::cout << "Actualizacion recurso compartido: " << valor_c << std::endl;
+} // Se librera el bloqueo del mutex
+
+void mutexLockGuard() {
+    std::thread t0 {actualizarValorC, 2};
+    std::thread t1 {actualizarValorC, 5};
+
+    t0.join();
+    t1.join();
+}
+
+std::mutex mutex_b;
+
+void mutexTryLock() {
+    if (mutex_b.try_lock()) {
+        std::cout << "Se ha adquirido el mutex" << std::endl;
+        mutex_b.unlock();
+    } else {
+        std::cout << "No se ha podido adquirir el mutex" << std::endl;
+    }
+}
+
+int contador_a { 0 };
+std::mutex contador_mutex_a;
+
+void exclusionMutuaMutex() {
+    contador_mutex_a.lock(); // Adquirir el mutex
+    ++contador_a; // Proteger la sección crítica
+    contador_mutex_a.unlock(); // Liberar el mutex
+}
+
+void punterosYReferenciasAtomicas() {
+    std::atomic<int*> p;
+    std::vector<int> v(3, 0);
+
+    p.store(&v[0]); // Inicializar el puntero atómico al primer elemento del vector
+
+    int* q = p.load(); // Leer el valor de p de forma atómica
+    (*q)++; // Incrementar el valor almacenado en la dirección de memoria a la que apunta el puntero
+    p.store(q + 1); // Modificar el valor de p de forma atómica (al siguiente elemento del vector)
+
+    std::cout << "Resultado = " << std::endl;
+
+    // Nota: Solo se pueden crear valores atomicos a smart pointer shared_ptr (std::atomic<std::shared_ptr<int>> ptr)
+
+    // ------------------------------------------------
+    int x = 0;
+    std::atomic_ref<int> atomicRef { x };
+    atomicRef = 10; // Asigna el valor de forma atómica
+}
+
+void aumentarValorAtomico(std::atomic<int>& contador) {
+    for (int i{ 0 }; i < 100; ++i) {
+        ++contador;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+void operacionesAtomicas() {
+    std::atomic<int> contador{ 0 };
+    std::vector<std::thread> threads;
+
+    for (int i{ 0 }; i < 10; ++i)
+        threads.emplace_back(std::thread{ aumentarValorAtomico, std::ref(contador) }); // Pasar parametro como ref para que el valor no sea copiado
+
+    for (auto& t : threads)
+        t.join();
+
+    std::cout << "Resultado = " << contador << std::endl;
+}
+
+void aumentarValorNoAtomico(int& contador) {
+    for (int i{ 0 }; i < 100; ++i) {
+        ++contador;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+}
+
+void operacionesNoAtomicas() {
+    int contador{ 0 };
+    std::vector<std::thread> threads;
+
+    for (int i{ 0 }; i < 10; ++i)
+        threads.emplace_back(std::thread{ aumentarValorNoAtomico, std::ref(contador) }); // Pasar parametro como ref para que el valor no sea copiado
+
+    for (auto& t : threads)
+        t.join();
+
+    std::cout << "Resultado = " << contador << std::endl;
+}
+
+class TrivialmenteCopiable {
+    private: int m_int;
+};
+
+void variablesAtomicas() {
+    // Para usar variables atómicas con clases definidas por el usuario, la clase debe ser trivialmente copiable (Copiados mediante una simple asignación de memoria)
+    std::cout << std::is_trivially_copyable_v <TrivialmenteCopiable> << std::endl; // true
+
+    std::atomic<int> num { 5 };
+    int anterior = num.fetch_add(1);
+    std::cout << "Anterior = " << anterior << std::endl;  // 5
+    std::cout << "Actual = " << num << std::endl;         // 6
+}
+
+void hilosjThread() {
+    // Usa RAII para vincular un objeto a su destructor (Permite la cancelación cooperativa)
+    /*
+    std::jthread job{ [](std::stop_token token) { //Vigila avisos de detención del subproceso
+            int contador = 0;
+            while (!token.stop_requested() && contador < 10) { // Verifica si se ha lanzado un aviso de detención
+                std::cout << "Iteracion del bucle: " << contador << std::endl;
+                contador++;
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+        } };
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    job.request_stop();
+    */
+};
+
+int k{};
+thread_local int n{};
+
+void fThread(int id) {
+    std::cout << "Thread " << id << " k=" << k << " n=" << n << '\n';
+    ++k;
+    ++n;
+}
+
+void threadLocal() {
+    // Con el uso de thread_local se puede marcar cualquier variable para que sea independiente en cada subproceso
+    // Cada subproceso tendra su copia unica de la variable con duración igual a la del subproceso
+    std::thread t1{ fThread, 1 };
+    t1.join();
+
+    std::thread t2{ fThread, 2 };
+    t2.join();
+    //Thread 1 k=0 n=0
+    //Thread 2 k=1 n=0
+}
+
+class ClaseFM {
+private:
+    int m_id;
+public:
+    ClaseFM(int id) : m_id{id } { }
+    void proceso() { std::cout << "Valor " << m_id << std::endl; }
+};
+
+void hilosConFuncionesMiembro() {
+    ClaseFM instancia { 9 };
+    std::thread t{ &ClaseFM::proceso, &instancia };
+    // El primer parametro (&ClaseFM::proceso) es la dirección en memoria de la función miembro
+    // El segundo parametro es la dirección en memoria del objeto concreto
+    t.join();
+}
+
+void hilosConLambdas() {
+    int id{ 1 };
+    int numIteraciones{ 5 };
+
+    std::thread t1{ [id, numIteraciones] {
+        for (int i { 0 }; i < numIteraciones; ++i)
+            std::cout << "Contador " << id << " tiene valor " << i << std::endl;
+    } };
+    t1.join();
+}
+
+class Functor {
+private:
+    int m_id;
+    int m_limit;
+
+public:
+    Functor(int id, int limit) : m_id{ id }, m_limit{ limit } { }
+
+    void operator()() const {
+        for (int i{ 0 }; i < m_limit; ++i)
+            std::cout << "Contador " << m_id << " tiene un valor " << i << std::endl;
+    }
+};
+
+void hilosConObjetosDeFuncionOFunctores() {
+    /*
+    Functor functor { 2, 4 };
+    functor(); // Llama el método  void operator()() const...
+    */
+    std::thread t1{ Functor{ 1, 6 } };
+
+    Functor f { 2, 4 };
+    std::thread t2{ f };
+    //std::thread t2{ std::ref(f) }; //Pasar una referencia en lugar de una copia
+
+    t1.join();
+    t2.join();
+}
+
+void hfuncion(int id, int limit) {
+    for (int i{ 0 }; i < limit; ++i)
+        std::cout << "Contador " << id << " tiene un valor " << i << '\n';
+}
+
+void hilos() {
+    std::thread t1{ hfuncion, 1, 6 };
+    std::thread t2{ hfuncion, 2, 4 };
+    t1.join();
+    t2.join();
+}
+
+void eliminacionArchivos() {
+    if (remove("algo.txt") != 0)
+        std::cout << "Error al borrar el archivo" << "\n";
+    else
+        std::cout << "El archivo fue borrado exitosamente" << "\n";
+}
+
+void punterosDeArchivos() {
+    std::ifstream inf{ "../hola.txt" };
+
+    inf.seekg(14, std::ios::cur); // Mueve puntero hacia adelante 14 bytes desde la posición actual
+    inf.seekg(-8, std::ios::cur); // Mueve puntero hacia atrás 8 bytes desde la posición actual
+    inf.seekg(22, std::ios::beg); // Mueve puntero al byte 22 en el archivo
+    inf.seekg(24); // Mueve puntero al byte 24 en el archivo
+    inf.seekg(-28, std::ios::end); // mueve puntero al byte 28 contando desde el final del archivo
+
+    //inf.tellg(); // Retorna la posición actual del archivo
+    std::cout << ": " << inf.tellg() << "\n";
+    //inf.seekg(inf.tellg(), std::ios::beg);
+}
+
+void manejoArchivosModos() {
+    std::fstream archivo{ "../hola.txt", std::ios::out | std::ios::in };
+    /*
+     app      Modo añadir
+     ate      Final del archivo
+     binary   Modo binario
+     in       Modo lectura (Predeterminado para ifstream)
+     out      Modo escritura (Predeterminado para ofstream)
+     trunc    Borra el archivo si ya existe
+     */
+}
+
+void manejoArchivos() { // fstream, ifstream, ofstream
+    setlocale(LC_ALL, "es_ES.UTF-8");
+
+    std::fstream archivo{ "../hola.txt" };  // Si no existe lo creará
+    if (!archivo.is_open())
+        throw std::runtime_error("Error al abrir archivo");
+
+    std::string linea;
+    while (std::getline(archivo, linea)) {
+        std::cout << linea << "\n";
+    }
+
+    //archivo.close(); // Puede cerrarse explícitamente
+} // El archivo es cerrado implícitamente por el destructor de fstream
+
+std::optional<int> textoANumero(std::string_view num) {
+    auto end { num.data() + num.length() };
+    int resultado{};
+    if(std::from_chars(num.data(), end, resultado).ptr != end)
+        return {};
+
+    return resultado;
+}
+
+void opcionalEjemplo() {
+    std::string num = "34";
+    auto valor { textoANumero(num) };
+
+    if (valor.has_value())
+        std::cout << "Valor: " << valor.value() << '\n';
+}
+
+std::optional<int> fooOptional(int num) {
+    if (num < 18)
+        return {};
+    else
+        return num;
+}
+
+void opcional() {
+    auto res { fooOptional(21) };
+    if (res)
+        std::cout << "Valor: " << *res << '\n';
+
+    std::cout << "end!" << '\n';
+}
+
+void validacionEntradasNumericas() {
+    int numero{};
+
+    std::cout << "Escribe tu edad: ";
+    std::cin >> numero;
+    if (std::cin.fail()) {
+        std::cin.clear(); // Restablecer el bitstate del stream a goodbit para poder usar ignore()
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiamos el mal input desde el stream
+        std::cout << "Error" << '\n';
+        return;
+    }
+
+    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpiar el resto del buffer
+    std::cout << "Numero: " << numero << '\n';
+}
+
+bool esNombreValido(std::string_view nombre) {
+    return std::all_of(nombre.begin(), nombre.end(), [](char ch) {
+       return (std::isalpha(ch) || std::isspace(ch));
+    });
+}
+
+void validacionEntradasTexto() {
+    std::string nombre{};
+    do {
+        std::cout << "Escribe tu nombre: ";
+        std::getline(std::cin, nombre);
+    } while (!esNombreValido(nombre));
+
+    std::cout << "Hola " << nombre << "\n";
+}
+
+void iostreamManipuladores() {
+    std::cout << std::hex << 27 << '\n';  // imprime 27 en hex
+    std::cout << 28 << '\n';              // seguimos con hex
+    std::cout << std::dec << 29 << '\n';  // vuelta a decimal
+}
+
+void iostreamFlags() {
+    std::cout.setf(std::ios::showpos); // Signo positivo en los numeros
+
+    //std::cout.setf(std::ios::showpos | std::ios::uppercase); // Varios flags
+    //std::cout.unsetf(std::ios::showpos); // Desactivar
+    //std::cout.setf(std::ios::hex, std::ios::basefield); // Hexadecimal
+
+    std::cout << 27 << '\n';
+}
+
+void streamANumeroProblema() {
+    int num;
+    char name[100];
+
+    std::cout << "Escribe tu edad:\n";
+    std::cin >> num;
+    // Se genera un inconveniente, ya que queda un \n en el buffer
+
+    //std::cin.ignore(); // Elimina el primer caracter del buffer
+    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Otro ejemplo
+
+    std::cout << "Escribe tu nombre:\n";
+    std::cin.getline(name, 100);
+
+    std::cout << "Nombre: " << name << " edad: " << num << std::endl;
+}
+
+void streamEstiloCpp() {
+    std::cout << "Escribe un texto: ";
+    std::string strBuf;
+    std::getline(std::cin, strBuf);
+    std::cout << strBuf << '\n';
+}
+
+void streamEstiloC() {
+    char strBuf[100];
+    std::cout << "Escribe un texto: ";
+    std::cin.getline(strBuf, 100);
+    std::cout << "-> " << strBuf << '\n';
+
+    std::cout << std::cin.gcount() << " caracteres ingresados" << '\n';
+
+
+    std::cout << "Escribe otro texto: ";
+    std::cin.getline(strBuf, 100);
+    std::cout << "-> " << strBuf << '\n';
+}
+
+void algoritmos() {
+    // https://en.cppreference.com/w/cpp/algorithm
+    // https://hackingcpp.com/index.html
+    std::list<int> list(5);
+    std::iota(list.begin(), list.end(), 1); //Poblamos 'list' con números a partir de 1
+
+    std::list<int> list2 { 5, 4, 8, 10 };
+
+    //const std::list<int>::iterator &min = ...
+    auto min = std::min_element(list2.begin(), list2.end());
+    auto max = std::max_element(list2.begin(), list2.end());
+
+    std::cout << "Min: " << *min << " Max: " << *max << std::endl;
+
+    /*
+     * Erase
+     */
+    std::vector<int> v{ 7,9,3,5,3,2,4,1,8,0 };
+    //                     |         |
+    auto min_ptr = min_element(begin(v) + 2, begin(v) + 7);
+    std::cout << *min_ptr << '\n'; // 2
+    v.erase(min_ptr);
+
+    for (auto c : v)
+        std::cout << c << ' '; // 7 9 3 5 3 4 1 8 0
+    std::cout << '\n';
+}
+
+void iteradores() {
+    /*
+     containter::iterator  (Es un puntero a un elemento del contendor y un grupo de operadores sobrecargados)
+     Operator*   -> Operador de indirección
+     Operator++  -> Operador de incremento y decremento (--)
+     Operator==  -> Operador de igualdad o desigualdad (!-)
+     Operator=   -> Operador de asignación, indirecciona y asigna
+     */
+
+    std::list<int> list;
+    for (int i = 0; i < 5; ++i)
+        list.push_back(i);   // push_back or emplace_back
+
+    std::list<int>::const_iterator it;
+    it = list.cbegin();
+    while (it != list.cend()) {
+        std::cout << *it << std::endl;
+        ++it;
+    }
+
+    // Map
+    std::map<int, std::string> map;
+    //map.insert(std::pair<int, std::string>(4, "A"));
+    map.insert(std::make_pair(4, "A"));
+    map.insert(std::make_pair(2, "B"));
+    map.insert(std::make_pair(3, "C"));
+
+    auto itm { map.cbegin() };
+    while (itm != map.cend()) {
+        std::cout << itm->first << ":" << itm->second << std::endl;
+        ++itm;
+    }
+}
+
+void stdPriorityQueue() {
+    std::priority_queue<int> queue;
+    queue.push(10);
+    queue.push(30);
+    queue.push(1);
+
+    queue.pop();
+
+    while (!queue.empty()) {
+        std::cout << queue.top() << std::endl;
+        queue.pop();
+    }
+    // 10, 1
+}
+
+void stdQueue() { // Contenedor adaptativo
+    std::queue<int> queue;
+    queue.push(21);
+    queue.push(22);
+    queue.push(23);
+
+    queue.pop();
+
+    while (!queue.empty()) {
+        std::cout << queue.front() << std::endl;
+        queue.pop();
+    }
+    // 22, 23
+}
+
+void stdStack() { // Contenedor adaptativo
+    std::stack<int> stack;
+    stack.push(21);
+    stack.push(22);
+    stack.push(23);
+
+    stack.pop();
+
+    while (!stack.empty()) {
+        std::cout << stack.top() << std::endl;
+        stack.pop();
+    }
+    // 22, 21
+}
+
+void stdMap() { // Contenedor asociativo
+    std::map<int, std::string> map;
+    map.insert(std::pair<int, std::string>(1, "A"));
+    map.insert(std::pair<int, std::string>(2, "B"));
+    map.insert(std::pair<int, std::string>(3, "C"));
+
+    std::cout << "Size " << map.size() << std::endl;
+
+    /*
+    for (std::map<int, std::string>::iterator it = map.begin(); it != map.end(); ++it)
+        std::cout << it->first << " : " << it->second << std::endl;
+    */
+    for (auto& it : map) {
+        std::cout << it.first << " : " << it.second << std::endl;
+    }
+}
+
+void stdSet() { // Contenedor asociativo
+    std::set<char> set;
+    set.insert('G');
+    set.insert('F');
+    set.insert('G');
+    set.insert('A');
+
+    for (auto& str : set) {
+        std::cout << str << std::endl; // A, F, G
+    }
+}
+
+void stdList() { // Contenedor secuencial
+    std::list<int> list { 3, 5, 7, 11 };
+    list.push_front(1);
+    list.push_back(13);
+    //list.emplace_back(0); // emplace_back es más eficiente que push_back, ya que se construye primero en memoria sin necesidad de hacer una copia
+
+    const std::list<int>::iterator &b = list.begin();
+    const std::list<int>::iterator &e = list.end();
+
+    const std::list<int>::iterator iterador = std::find(list.begin(), list.end(), 7);
+    if (iterador != list.end())
+        list.insert(iterador, 6);
+
+    for (int i : list)
+        std::cout << i << std::endl;
+}
+
+void stdDeque() { // Contenedor secuencial
+    std::deque<int> deq;
+    for (int i = 0; i < 3; ++i) {
+        deq.push_back(i);
+        deq.push_front(10 - i);
+    }
+    /*
+    for (int i = 0; i < deq.size(); ++i)
+        std::cout << deq[i] << std::endl;
+    */
+
+    for (int i : deq)
+        std::cout << i << std::endl;
+}
+
+void stlStdVector() { // Contenedor secuencial
+    std::vector<int> vector;
+    for (int i = 0; i < 6; ++i)
+        vector.push_back(i * 2);
+
+    for (int i : vector)
+        std::cout << i << std::endl;
+}
+
+void smartPointerWeakPtr() {
+    // weak_ptr a shared_ptr con la función .lock()
+}
+
+void smartPointerSharedPtrInfo() {
+    // std::shared_ptr necesita internamente dos punterso:
+    // Un puntero al recurso que está administrando y un segundo puntero al bloque de control
+    // La función make_shared usa una única asignación en lugar de dos
+}
+
+void smartPointerSharedPtrMakeShared() {
+    auto ptr1 { std::make_shared<RecursoL>(9) };                      // 1. Constructor recurso 9 0x1ce9b961b90
+    {
+        auto ptr2 { ptr1 };
+        std::cout << "Count: " << ptr2.use_count() << std::endl;      // 2. Count: 2
+        std::cout << "Count: " << ptr1.use_count() << std::endl;      // 3. Count: 2
+    }
+    std::cout << "Count: " << ptr1.use_count() << std::endl;          // 4. Count: 1
+}                                                                     // 5. Limpieza recurso 9 0x1ce9b961b90
+
+void erroresEnSmartPointerSharedPtr() {
+    RecursoL* recurso { new RecursoL };                               // 1. Constructor recurso 0 0x19df5931b80
+    std::shared_ptr<RecursoL> ptr1 { recurso };
+    {
+        std::shared_ptr<RecursoL> ptr2 { recurso }; // Generará error, ptr1 y ptr2 apuntan al mismo recurso pero no se conocen
+        std::cout << "Count: " << ptr2.use_count() << std::endl;      // 2. Count: 1
+        std::cout << "Count: " << ptr1.use_count() << std::endl;      // 3. Count: 1
+    }                                                                 // 4. Limpieza recurso 0 0x19df5931b80
+    std::cout << "Count: " << ptr1.use_count() << std::endl;          // 5. Count: 1
+}                                                                     // 6. Limpieza recurso -174908304 0x19df5931b80
+
+void smartPointerSharedPtr() {
+    // Mulitples smart pointer apuntando a un mismo recurso
+    // Internamente realiza un seguimiento de cuantos punteros apuntan al mismo recurso (Dicho seguimiento genera una repercusión en el rendimiento)
+    // Mientras un shared_ptr apunte al recurso, éste no se desasignará
+
+    RecursoL* recurso { new RecursoL };                               // 1. Constructor recurso 0 0x1e09f391b80
+    std::shared_ptr<RecursoL> ptr1 { recurso };
+    {
+        std::shared_ptr<RecursoL> ptr2 { ptr1 };  // Para compartir el recurso se deben crear los shared_ptr a partir de otro shared_ptr ya existente
+        std::cout << "Count: " << ptr2.use_count() << std::endl;      // 2. Count: 2
+        std::cout << "Count: " << ptr1.use_count() << std::endl;      // 3. Count: 2
+    }
+    std::cout << "Count: " << ptr1.use_count() << std::endl;          // 4. Count: 1
+}                                                                     // 5. Limpieza recurso 0 0x1e09f391b80
+
+void tomarPropiedad(std::unique_ptr<RecursoL> r) {
+    if (r)
+        std::cout << "id: " << r->getId() << std::endl;       // 2. id: 9
+}                                                             // 3. Limpieza recurso 9 0x29497001b80
+
+void smartPointersPasoParametro() {
+    auto ptr { std::make_unique<RecursoL>(9) };               // 1. Constructor recurso 9 0x29497001b80
+
+    //tomarPropiedad(ptr); // No compila, la asignación por copia está deshabilitada
+    tomarPropiedad(std::move(ptr));
+                                                              // (prt RecursoL ahora es NULL)
+    std::cout << "end" << std::endl;                          // 4. end
+}
+
+// make_unique nos permite asignar un recurso a un std::unique_ptr sin necesidad de unsar 'new'
+std::unique_ptr<RecursoL> crearRecursoLPtr() {
+    return std::make_unique<RecursoL>(9);                     // 1. Constructor recurso 9 0x1e998d61b80
+}
+
+void smartPointersRetornoFuncion() {
+    //std::unique_ptr<RecursoL> r { crearRecursoLPtr() };
+    auto r { crearRecursoLPtr() };
+
+    std::cout << "id: " << r->getId() << std::endl;          // 2. id: 9
+}                                                            // 3. Limpieza recurso 9 0x1e998d61b80
+
+void erroresAlUsarSmartPointers() {
+    // No permitir que varios objetos administren el mismo recurso
+    RecursoL* x { new RecursoL(1) };
+    std::unique_ptr<RecursoL> x1 { x };
+    std::unique_ptr<RecursoL> x2 { x };
+    //Ambos ptrs intentaran desasignar el recurso
+
+    std::cout << "..." << std::endl;
+
+    // No eliminar manualmente el recurso que administra un unique_ptr
+    RecursoL* y { new RecursoL(1) };
+    std::unique_ptr<RecursoL> y2 { y };
+    delete y;
+}
+
+void smartPointerUniquePtrMove() {
+    std::unique_ptr<RecursoL> r1 { new RecursoL(1) };   // Constructor recurso 1 0x20139dd1b80
+    std::unique_ptr<RecursoL> r2 {};
+
+    std::cout << "res1 " << (r1 ? "no null" : "null") << std::endl;   // no null
+    std::cout << "res2 " << (r2 ? "no null" : "null") << std::endl;   // null
+
+    //r2 = r1;              // No compilará - La asignación por copia está deshabilitada
+    r2 = std::move(r1);     // r2 asume la propiedad, r1 es configurado a null
+
+    std::cout << "Propiedad transferida" << std::endl;
+    std::cout << "res1 " << (r1 ? "no null" : "null") << std::endl;   // null
+    std::cout << "res2 " << (r2 ? "no null" : "null") << std::endl;   // no null
+
+
+    if (r2) // Usa cast implícito a bool para asegurarse que r2 contiene un recurso
+        std::cout << *r2 << std::endl; // Imprime el RecursoL que posee r2. Similar a T& operator*() const { return *m_ptr }
+
+} // Limpieza recurso 1 0x20139dd1b80
+
+void smartPointerUniquePtr() {
+    /*
+    RecursoL* recurso = new RecursoL(1); // Asignación dinamica en memoria
+    delete recurso; // Desasignación de memoria
+    */
+
+    // #include <memory>
+    // El objeto asignado dinámicamente no puede ser compartido con otros objetos
+    std::unique_ptr<RecursoL> recurso { new RecursoL(1) }; //Constructor recurso 1 0x1a2171e18d0
+} // Limpieza recurso 1 0x1a2171e18d0
+
 template<class T>
 void intercambioPorMovimiento(T& a, T& b) {
-    T temp { std::move(a) };   // Constructor movimiento 1 from: 0x9719dff61c to: 0x9719dff5dc
-    a = std::move(b);          // Asignacion por movimiento 1 from: 0x9719dff618 to: 0x9719dff61c
-    b = std::move(temp);       // Asignacion por movimiento 2 from: 0x9719dff5dc to: 0x9719dff618
-} // Limpieza recurso 1 0x9719dff5dc
+    T temp { std::move(a) };                       // 5. Constructor movimiento 1 from: 0x738abffd1c to: 0x738abffcdc
+    a = std::move(b);                              // 6. Asignacion por movimiento 1 from: 0x738abffd18 to: 0x738abffd1c
+    b = std::move(temp);                           // 7. Asignacion por movimiento 2 from: 0x738abffcdc to: 0x738abffd18
+}                                                  // 8. Limpieza recurso 1 0x738abffcdc
 
 void stdMoveIntercambioPorMovimiento() {
-    RecursoL x {1 };    // Constructor recurso 1 0x9719dff61c
-    RecursoL y {2 };    // Constructor recurso 2 0x9719dff618
+    RecursoL x { 1 };                               // 1. Constructor recurso 1 0x738abffd1c
+    RecursoL y { 2 };                               // 2. Constructor recurso 2 0x738abffd18
 
-    std::cout << "x " << x.getId() << std::endl;   // 1
-    std::cout << "y " << y.getId() << std::endl;   // 2
+    std::cout << "x " << x.getId() << std::endl;   // 3. x 1
+    std::cout << "y " << y.getId() << std::endl;   // 4. y 2
 
     //std::move Cambia la categoria de valor de l-value a r-value
     intercambioPorMovimiento(x, y);
 
-    std::cout << "x " << x.getId() << std::endl;   // 2
-    std::cout << "y " << y.getId() << std::endl;   // 1
-    std::cout << "end" << std::endl;
-    /*
-    Limpieza recurso 1 0x9719dff618
-    Limpieza recurso 2 0x9719dff61c
-     */
-}
+    std::cout << "x " << x.getId() << std::endl;   // 9. x 2
+    std::cout << "y " << y.getId() << std::endl;   // 10. y 1
+    std::cout << "end" << std::endl;               // 11. end
+} /* 12.
+    Limpieza recurso 1 0x738abffd18
+    Limpieza recurso 2 0x738abffd1c
+*/
 
 // Costoso por copia profunda
 template<class T>
 void intercambioPorCopia(T& a, T& b) {
-    T temp { a }; // Constructor copia 1 from: 0xdb683ff85c to: 0xdb683ff80c
-    a = b;        // Asignacion por copia from: 0xdb683ff858 to: 0xdb683ff85c
-    b = temp;     // Asignacion por copia from: 0xdb683ff80c to: 0xdb683ff858
-} // Limpieza recurso 1 0xdb683ff80c
+    T temp { a };                                  // 5. Constructor copia 1 from: 0xaa4bfffb4c to: 0xaa4bfffafc
+    a = b;                                         // 6. Asignacion por copia 1 from: 0xaa4bfffb48 to: 0xaa4bfffb4c
+    b = temp;                                      // 7. Asignacion por copia 2 from: 0xaa4bfffafc to: 0xaa4bfffb48
+}                                                  // 8. Limpieza recurso 1 0xaa4bfffafc
 
 void stdMoveIntercambioPorCopia() {
-    RecursoL x {1 }; // Constructor recurso 1 0xdb683ff85c
-    RecursoL y {2 }; // Constructor recurso 2 0xdb683ff858
+    RecursoL x {1 };                               // 1. Constructor recurso 1 0xaa4bfffb4c
+    RecursoL y {2 };                               // 2. Constructor recurso 2 0xaa4bfffb48
 
-    std::cout << "x " << x.getId() << std::endl;   // 1
-    std::cout << "y " << y.getId() << std::endl;   // 2
+    std::cout << "x " << x.getId() << std::endl;   // 3. x 1
+    std::cout << "y " << y.getId() << std::endl;   // 4. y 2
 
     intercambioPorCopia(x, y); // 'x' y 'y' se pasan cómo l-values
 
-    std::cout << "x " << x.getId() << std::endl;   // 2
-    std::cout << "y " << y.getId() << std::endl;   // 1
-    std::cout << "end" << std::endl;
-    /*
-    Limpieza recurso 1 0xdb683ff858
-    Limpieza recurso 2 0xdb683ff85c
-     */
-}
+    std::cout << "x " << x.getId() << std::endl;   // 9. x 2
+    std::cout << "y " << y.getId() << std::endl;   // 10. y 1
+    std::cout << "end" << std::endl;               // 11. end
+} /* 12.
+    Limpieza recurso 1 0xaa4bfffb48
+    Limpieza recurso 2 0xaa4bfffb4c
+*/
 
 void copiaYOperadorAsignacion() {
-    RecursoL r1 { 1 };   // Constructor recurso 1 0x1384bff66c
-    RecursoL r2 = r1;       // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff668
-    RecursoL r3 ( r1 );     // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff664
-    RecursoL r4 { r1 };     // Constructor copia 1 from: 0x1384bff66c to: 0x1384bff660
+    RecursoL r1 { 1 };                 // 1. Constructor recurso 1 0xf3fd5ff5bc
+    RecursoL r2 = r1;                  // 2. Constructor copia 1 from: 0xf3fd5ff5bc to: 0xf3fd5ff5b8
+    RecursoL r3 ( r1 );                // 3. Constructor copia 1 from: 0xf3fd5ff5bc to: 0xf3fd5ff5b4
+    RecursoL r4 { r1 };                // 4. Constructor copia 1 from: 0xf3fd5ff5bc to: 0xf3fd5ff5b0
 
-    RecursoL r5;            // Constructor recurso 0 0x1384bff65c - Usa valor id por defecto en el constructor int id = 0
-    r5 = r1;                // Asignacion por copia 0 from: 0x1384bff66c to: 0x1384bff65c
+    RecursoL r5;                       // 5. Constructor recurso 0 0xf3fd5ff5ac - Usa valor id por defecto en el constructor int id = 0
+    r5 = r1;                           // 6. Asignacion por copia 0 from: 0xf3fd5ff5bc to: 0xf3fd5ff5ac
 
-    RecursoL r6 = RecursoL(3); // Constructor recurso 3 0x1384bff658 - rValue
+    RecursoL r6 = RecursoL(3);         // 7. Constructor recurso 3 0xf3fd5ff5a8 - rValue
 
-    std::cout << "end " << std::endl;
-    /*
-    Limpieza recurso 3 0x1384bff658
-    Limpieza recurso 1 0x1384bff65c
-    Limpieza recurso 1 0x1384bff660
-    Limpieza recurso 1 0x1384bff664
-    Limpieza recurso 1 0x1384bff668
-    Limpieza recurso 1 0x1384bff66c
-     */
-}
+    std::cout << "end " << std::endl;  // 8. end
+} /* 9.
+    Limpieza recurso 3 0xf3fd5ff5a8
+    Limpieza recurso 1 0xf3fd5ff5ac
+    Limpieza recurso 1 0xf3fd5ff5b0
+    Limpieza recurso 1 0xf3fd5ff5b4
+    Limpieza recurso 1 0xf3fd5ff5b8
+    Limpieza recurso 1 0xf3fd5ff5bc
+*/
 
 RecursoL& funcionPorReferenciaYRetornoReferencia(RecursoL& r) {
-    std::cout << "function " << std::endl;
+    std::cout << "function " << std::endl;     // 2. function
     r.setId(r.getId() + 1);
     return r;
-}
+}                                              // 3. Constructor copia 2 from: 0x27075ffb2c to: 0x27075ffb28
 
+// Comportamiento similar a pasoParametroPorReferenciaYRetornoNormal
 void pasoParametroPorReferenciaYRetornoReferencia() {
-    RecursoL r1 { 1 };
-    RecursoL r2 {funcionPorReferenciaYRetornoReferencia(r1) };
+    RecursoL r1 { 1 };                         // 1. Constructor recurso 1 0x27075ffb2c
+    RecursoL r2 { funcionPorReferenciaYRetornoReferencia(r1) };
 
-    std::cout << "end " << std::endl;
-    /*
-    Constructor recurso 1 0x44ecdffb1c
-    function
-    Constructor copia 2 from: 0x44ecdffb1c to: 0x44ecdffb18
-    end
-    Limpieza recurso 2 0x44ecdffb18
-    Limpieza recurso 2 0x44ecdffb1c
-     */
-}
+    std::cout << "end " << std::endl;          // 4. end
+} /* 5.
+    Limpieza recurso 2 0x27075ffb28
+    Limpieza recurso 2 0x27075ffb2c
+*/
 
 RecursoL funcionPorReferenciaYRetornoNormal(RecursoL& r) {
-    std::cout << "function " << std::endl;
+    std::cout << "function " << std::endl;                   // 2. function
     r.setId(r.getId() + 1);
-    return r;
+    return r;                                                // 3. Constructor copia 2 from: 0x839fdff5ec to: 0x839fdff5e8
 }
 
 void pasoParametroPorReferenciaYRetornoNormal() {
-    RecursoL r1 { 1 };
+    RecursoL r1 { 1 };                                       // 1. Constructor recurso 1 0x839fdff5ec
     RecursoL r2 {funcionPorReferenciaYRetornoNormal(r1) };
 
-    std::cout << "end " << std::endl;
-    /*
-    Constructor recurso 1 0xe2ad3ff60c
-    function
-    Constructor copia 2 from: 0xe2ad3ff60c to: 0xe2ad3ff608
-    end
-    Limpieza recurso 2 0xe2ad3ff608
-    Limpieza recurso 2 0xe2ad3ff60c
-     */
-}
+    std::cout << "end " << std::endl;                        // 4. end
+} /* 5.
+    Limpieza recurso 2 0x839fdff5e8
+    Limpieza recurso 2 0x839fdff5ec
+*/
 
 RecursoL funcionPorReferencia(RecursoL& r) {
-    std::cout << "function " << std::endl;
-    RecursoL recurso { r.getId() + 1 };
+    std::cout << "function " << std::endl;     // 2. function
+    RecursoL recurso { r.getId() + 1 };        // 3. Constructor recurso 2 0xa3933ff708
     return recurso;
 }
 
 void pasoParametroPorReferencia() {
-    RecursoL r1 { 1 };
+    RecursoL r1 { 1 };                         // 1. Constructor recurso 1 0xa3933ff70c
     RecursoL r2 {funcionPorReferencia(r1) };
 
-    std::cout << "end " << std::endl;
-    /*
-    Constructor recurso 1 0x13055ffd0c
-    function
-    Constructor recurso 2 0x13055ffd08
-    end
-    Limpieza recurso 2 0x13055ffd08
-    Limpieza recurso 1 0x13055ffd0c
-     */
+    std::cout << "end " << std::endl;          // 4. end
+} /* 5.
+    Limpieza recurso 2 0xa3933ff708
+    Limpieza recurso 1 0xa3933ff70c
+*/
+
+RecursoL funcionRetornoValor2() {
+    return { 1 } ;                                     // 1. Constructor recurso 1 0xc21fdff85c
 }
 
-RecursoL funcionPorCopia(RecursoL r) {
-    std::cout << "function " << std::endl;
-    RecursoL recurso { r.getId() + 1 };
+RecursoL funcionRetornoValor1() {
+    RecursoL recurso { funcionRetornoValor2() };
     return recurso;
 }
 
+void retornoValorFuncion() {
+    RecursoL r { funcionRetornoValor1() };
+    std::cout << "end " << std::endl;                   // 2. end
+}                                                       // 3. Limpieza recurso 1 0xc21fdff85c
+
+RecursoL funcionPorCopia(RecursoL r) {        // 2. Constructor copia 1 from: 0xe40b9ff6f8 to: 0xe40b9ff6fc
+    std::cout << "function " << std::endl;    // 3. function
+    RecursoL recurso { r.getId() + 1 };       // 4. Constructor recurso 2 0xe40b9ff6f4
+    return recurso;
+}                                             // 5. Limpieza recurso 1 0xe40b9ff6fc
+
 void pasoParametrosPorCopia() {
-    RecursoL r1 { 1 };
+    RecursoL r1 { 1 };                        // 1. Constructor recurso 1 0xe40b9ff6f8
     RecursoL r2 {funcionPorCopia(r1) };
 
-    std::cout << "end " << std::endl;
-    /*
-    Constructor recurso 1 0x6a84bff668
-    Constructor copia 1 from: 0x6a84bff668 to: 0x6a84bff66c
-    function
-    Constructor recurso 2 0x6a84bff664
-    Limpieza recurso 1 0x6a84bff66c
-    end
-    Limpieza recurso 2 0x6a84bff664
-    Limpieza recurso 1 0x6a84bff668
-     */
-}
+    std::cout << "end " << std::endl;         // 6. end
+
+} /* 7.
+    Limpieza recurso 2 0xe40b9ff6f4
+    Limpieza recurso 1 0xe40b9ff6f8
+*/
 
 void stdMove() {
     // std::move indica que un objeto puede ser movido en lugar de copiado.
@@ -302,7 +1114,9 @@ SmartPtrCopProfYMov<Recurso> generarRecurso() {
 
 void constYAsigCopiaProfundaYMovimiento() {
     SmartPtrCopProfYMov<Recurso> r;
-    r = generarRecurso(); // Despues de ejecutar generarRecurso() llama a la sobreescritura de asignación por movimiento (r-value)
+    r = generarRecurso(); // Despues de ejecutar generarRecurso() llama a la sobreescritura de asignación por movimiento de SmartPtrCopProfYMov (r-value)
+
+    //SmartPtrCopProfYMov<Recurso> r { generarRecurso() }; // De esta forma se asigna directamente el resultado de generarRecurso() a 'r'
 
     /*
     SmartPtrCopProfYMov<Recurso> r2 = generarRecurso(); // De esta forma el 'return recurso' se asigna directamente a r2
@@ -479,6 +1293,27 @@ void punterosInteligentes() {
     MySmartPtr<Recurso> copia ( recurso );
     // Ver semantica del movimiento
     */
+}
+
+struct DataX {
+    int id {};
+    int number {};
+};
+
+void inicioConthreads() {
+    {
+        DataX x { 4, 3 };                                                     // 1. 0xbd47ffa00
+        auto f = [=]() {
+            // x;                                                             // 5. 0x1debd4d1b88
+            std::cout << "Number " << x.number << std::endl;
+        };
+        std::thread my_thread(f);
+        my_thread.detach();
+    }                                                                         // 2. x es liberada (0xbd47ffa00)
+    DataX y { 1, 2 };                                                         // 3. 0xbd47ffa08
+    std::cout << "end" << std::endl;                                          // 4. end
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 void exceptionesReThrowing() {
@@ -1014,7 +1849,9 @@ void lambdasClausulaCaptura() {
 void lambdas() {
     auto x = []() {};
     auto y { [](int n) -> bool { return n == 4; } };  //El compilador genera un tipo unico para ella
-    std::function z { [](int n) { return n == 4; } };  //Se puede almacenar en std::function
+    std::function<bool(int)> z { [](int n) { return n == 4; } };  //Se puede almacenar en std::function
+    bool (*w)(int) { [](int n) { return n == 4; } };  // Con puntero a función
+
 
     std::vector<int> v {7, 2, 1, 4, 5};
     auto res1 { std::find_if(v.begin(), v.end(), [](int n) { return n == 4; }) };
