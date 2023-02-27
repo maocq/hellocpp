@@ -151,5 +151,7 @@ void rangosProyecciones();
 void templatesVariables();
 void templatesVariablesEspecializacion();
 void templatesAlias();
+void tuplas();
+void paqueteArgumentos();
 
 #endif //HELLOCPP_TEMAS_H

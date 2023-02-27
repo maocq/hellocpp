@@ -41,8 +41,27 @@
 
 
 int main() {
-    templatesAlias();
+    paqueteArgumentos();
     return 0;
+}
+
+template <typename T>
+T xmin(T a, T b) {
+    return a < b ? a : b;
+}
+template <typename T, typename... Args>
+T xmin(T a, Args... args) {
+    return xmin(a, xmin(args...));
+}
+
+void paqueteArgumentos() {
+    std::cout << "min(42.0, 7.5)=" << xmin(42.0, 7.5) << '\n';
+    std::cout << "min(1,5,3,-4,9)=" << xmin(1, 5, 3, -4, 9) << '\n';
+}
+
+void tuplas() {
+    std::tuple<std::string, int, std::string> t = std::make_tuple("hi", 9, "=)");
+    std::cout << std::get<0>(t) << ", " << std::get<1>(t) << ", " << std::get<2>(t) << std::endl;
 }
 
 template<typename T> using MyAlias = std::vector<T>;
