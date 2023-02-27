@@ -52,6 +52,7 @@ void funcionesComoArgumentos();
 void stdFunction();
 void lambdas();
 void lambdasClausulaCaptura();
+void lambdasEjemplos();
 void clases();
 void inicializacionClases();
 void clasesMiembrosNoStatic();

@@ -1821,6 +1821,12 @@ void clases() {
     vehiculo.imprimir();
 }
 
+void lambdasEjemplos() {
+    auto lambdaRegular = [](int a, int b) { return a + b; };
+    auto lambdaGenerica = [](auto a, auto b) { return a + b; };
+    auto lambdaPlantilla = []<typename T, typename U>(T a, U b) { return a + b; };
+}
+
 void lambdasClausulaCaptura() {
     int buscar { 4 };
     auto x { [buscar](int n) { return n == buscar; } }; //Crea una variable clonada con el mismo valor
