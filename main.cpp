@@ -1856,6 +1856,41 @@ void lambdas() {
     std::cout << "end!" << std::endl;
 }
 
+/*
+// Expansión Lambda
+
+#include <iostream>
+
+int main() {
+  	int limit = 18;
+    auto validateLimit = [&](int n) -> bool { return n > limit; };
+}
+
+// El compilador expande a:
+
+#include <iostream>
+
+int main() {
+  int limit = 18;
+
+  class __lambda_6_26 {
+    public:
+    inline bool operator()(int n) const {
+      return n > limit;
+    }
+
+    private:
+    int & limit;
+
+    public:
+    __lambda_6_26(int & _limit) : limit{_limit} {}
+  };
+
+  __lambda_6_26 validateLimit = __lambda_6_26{limit};
+  return 0;
+}
+*/
+
 bool primeroMayor(int x, int y) {
     return x > y;
 }
