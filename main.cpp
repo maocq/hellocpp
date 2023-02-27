@@ -41,8 +41,14 @@
 
 
 int main() {
-    templatesVariablesEspecializacion();
+    templatesAlias();
     return 0;
+}
+
+template<typename T> using MyAlias = std::vector<T>;
+
+void templatesAlias() {
+    MyAlias<int> miVector;
 }
 
 template<typename T>
