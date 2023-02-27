@@ -1857,7 +1857,7 @@ void lambdas() {
 }
 
 /*
-// Expansión Lambda
+// Expansión Lambda (https://cppinsights.io/)
 
 #include <iostream>
 
