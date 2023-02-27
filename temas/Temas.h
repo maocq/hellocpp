@@ -148,5 +148,7 @@ void conceptosPersonalizados();
 void rangosContexto();
 void rangos();
 void rangosProyecciones();
+void templatesVariables();
+void templatesVariablesEspecializacion();
 
 #endif //HELLOCPP_TEMAS_H

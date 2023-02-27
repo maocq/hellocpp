@@ -41,8 +41,38 @@
 
 
 int main() {
-    rangosProyecciones();
+    templatesVariablesEspecializacion();
     return 0;
+}
+
+template<typename T>
+constexpr T valor_predeterminado = T(0);
+
+template<>
+constexpr int valor_predeterminado<int> = 42;
+
+template<>
+constexpr char valor_predeterminado<char> = 'x';
+
+void templatesVariablesEspecializacion() {
+    int i {valor_predeterminado<int> };
+    char c = valor_predeterminado<char>;
+    double d = valor_predeterminado<double>;
+
+    std::cout << "valor_predeterminado<int> = " << i << std::endl;
+    std::cout << "valor_predeterminado<char> = " << c << std::endl;
+    std::cout << "valor_predeterminado<double> = " << d << std::endl;
+}
+
+template<typename T>
+constexpr T pi = T(3.1415926535897932385);
+
+void templatesVariables() {
+    double pi_double = pi<double>;
+    int pi_int = pi<int>;
+
+    std::cout << "pi (double) = " << pi_double << std::endl;
+    std::cout << "pi (int) = " << pi_int << std::endl;
 }
 
 class PersonaA {
