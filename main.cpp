@@ -1925,6 +1925,7 @@ void lambdas() {
 int main() {
   	int limit = 18;
     auto validateLimit = [&](int n) -> bool { return n > limit; };
+    validateLimit(21);
 }
 
 // El compilador expande a:
@@ -1934,7 +1935,7 @@ int main() {
 int main() {
   int limit = 18;
 
-  class __lambda_6_26 {
+  class __lambda_5_26 {
     public:
     inline bool operator()(int n) const {
       return n > limit;
@@ -1944,10 +1945,11 @@ int main() {
     int & limit;
 
     public:
-    __lambda_6_26(int & _limit) : limit{_limit} {}
+    __lambda_5_26(int & _limit) : limit{_limit} {}
   };
 
-  __lambda_6_26 validateLimit = __lambda_6_26{limit};
+  __lambda_5_26 validateLimit = __lambda_5_26{limit};
+  validateLimit.operator()(22);
   return 0;
 }
 */
