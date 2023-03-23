@@ -41,8 +41,50 @@
 
 
 int main() {
-    paqueteArgumentos();
+    singletonPattern();
     return 0;
+}
+
+class Singleton {
+public:
+    static Singleton& instance() {
+        static Singleton instance_ { 0 };
+        return instance_;
+    }
+
+    void something(const std::string& msg) {
+        std::lock_guard<std::mutex> guard(lock_);
+        std::cout << "INFO: " << msg << count_ << std::endl;
+        ++count_;
+    }
+
+    size_t getCount() const {
+        return count_;
+    }
+
+private:
+    Singleton(size_t count = 0) : count_(count) {
+        std::cout << "Constructor " << count << std::endl;
+    }
+    ~Singleton() {}
+    Singleton(const Singleton&) = delete;
+    Singleton& operator=(const Singleton&) = delete;
+
+    std::mutex lock_;
+    size_t count_;
+};
+
+void singletonPattern() {
+    std::vector<std::thread> threads;
+    for (int i { 0 }; i < 1000; ++i)
+        threads.emplace_back(std::thread([]() {
+            Singleton::instance().something("Hello");
+        }));
+
+    for (auto& t : threads)
+        t.join();
+
+    std::cout << "Count: " << Singleton::instance().getCount() << std::endl;
 }
 
 template <typename T>

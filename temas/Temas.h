@@ -153,5 +153,6 @@ void templatesVariablesEspecializacion();
 void templatesAlias();
 void tuplas();
 void paqueteArgumentos();
+void singletonPattern();
 
 #endif //HELLOCPP_TEMAS_H
