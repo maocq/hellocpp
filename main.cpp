@@ -1936,20 +1936,22 @@ int main() {
   int limit = 18;
 
   class __lambda_5_26 {
-    public:
-    inline bool operator()(int n) const {
-      return n > limit;
-    }
+  public:
+      inline bool operator()(int n) const {
+          return n > limit;
+      }
 
-    private:
-    int & limit;
+  private:
+      int & limit;
 
-    public:
-    __lambda_5_26(int & _limit) : limit{_limit} {}
+  public:
+      __lambda_5_26(int & _limit) : limit{_limit} {}
   };
 
   __lambda_5_26 validateLimit = __lambda_5_26{limit};
-  validateLimit.operator()(22);
+
+  bool response = validateLimit(22);
+  //bool response = validateLimit.operator()(22);
   return 0;
 }
 */
