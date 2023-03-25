@@ -67,8 +67,8 @@ private:
         std::cout << "Constructor " << count << std::endl;
     }
     ~Singleton() {}
-    Singleton(const Singleton&) = delete;
-    Singleton& operator=(const Singleton&) = delete;
+    Singleton(const Singleton&) = delete;            // Eliminación constructor por copia
+    Singleton& operator=(const Singleton&) = delete; // Eliminación operador de asignación por copia
 
     std::mutex lock_;
     size_t count_;
