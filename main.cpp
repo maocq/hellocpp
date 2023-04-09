@@ -41,7 +41,7 @@
 
 
 int main() {
-    singletonPattern();
+    referenciaDePuntero();
     return 0;
 }
 
@@ -2187,6 +2187,57 @@ void estructuras() {
 
     std::cout << usuario.nombre << std::endl;
     imprimirUsuario(usuario);
+}
+
+
+void fooReferenciaDePuntero(char*& p)  {
+    printf("&p    %p \n", &p);    // 3. 00000064409ff5d8
+    printf("p   %p \n", p);       // 4. 00007ff664b52715
+    // *p                         ->  Accede al primer elemento 'J'
+    p = "Vc";
+
+    printf("&p    %p \n", &p);   // 5. 00000064409ff5d8
+    printf("p   %p \n", p);      // 6. 00007ff664b52712
+    // *p                        ->  Accede al primer elemento 'V'
+}
+
+void referenciaDePuntero() { //Ejemplo tipo C
+    char* c = "Jh";
+    printf("&c   %p \n", &c);    // 1. 00000064409ff5d8
+    printf("c    %p \n", c);     // 2. 00007ff664b52715
+    // *c                        ->  Accede al primer elemento 'J'
+
+    fooReferenciaDePuntero(c);
+
+    printf("&c   %p \n", &c);    // 7. 00000064409ff5d8
+    printf("c    %p \n", c);     // 8. 00007ff664b52712
+    // *c                        ->  Accede al primer elemento 'V'
+    std::cout << "Main:" << c << "\n";  // Vc
+}
+
+void fooPunteroDePuntero(char** p)  {
+    printf("p    %p \n", p);     // 3. 000000ab3d5ff708
+    printf("*p   %p \n", *p);    // 4. 00007ff6250f271f
+    // **p                       ->  Accede al primer elemento 'J'
+    *p = "Vc";
+
+    printf("p    %p \n", p);     // 5. 000000ab3d5ff708
+    printf("*p   %p \n", *p);    // 6. 00007ff6250f271c
+    // **p                       ->  Accede al primer elemento 'V'
+}
+
+void punteroDePuntero() { //Ejemplo tipo C
+    char* c = "Jh";
+    printf("&c   %p \n", &c);    // 1. 000000ab3d5ff708
+    printf("c    %p \n", c);     // 2. 00007ff6250f271f
+    // *c                        ->  Accede al primer elemento 'J'
+
+    fooPunteroDePuntero(&c);
+
+    printf("&c   %p \n", &c);    // 7. 000000ab3d5ff708
+    printf("c    %p \n", c);     // 8. 00007ff6250f271c
+    // *c                        ->  Accede al primer elemento 'V'
+    std::cout << "Main:" << c << "\n";  // Vc
 }
 
 const std::string& menorPorReferencia(const std::string& x, const std::string& y) {
