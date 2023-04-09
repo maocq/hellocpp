@@ -37,6 +37,7 @@ void pasoPorDireccion();
 void pasoPorRefYDirecc();
 void pasoPunteroPorRef();
 void retornoPorReferencia();
+void punteroDePunteroMal();
 void punteroDePuntero();
 void referenciaDePuntero();
 void estructuras();

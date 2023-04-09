@@ -41,7 +41,7 @@
 
 
 int main() {
-    referenciaDePuntero();
+    singletonPattern();
     return 0;
 }
 
@@ -2238,6 +2238,31 @@ void punteroDePuntero() { //Ejemplo tipo C
     printf("c    %p \n", c);     // 8. 00007ff6250f271c
     // *c                        ->  Accede al primer elemento 'V'
     std::cout << "Main:" << c << "\n";  // Vc
+}
+
+void fooPunteroDePunteroMal(char* p)  {
+    printf("&p   %p \n", &p);    // 3. 00000089025ffbb0
+    printf("p    %p \n", p);     // 4. 00007ff7feff2715
+    // **p                       ->  Accede al primer elemento 'J'
+    p = "Vc";
+
+    printf("&p   %p \n", &p);    // 5. 00000089025ffbb0
+    printf("p    %p \n", p);     // 6. 00007ff7feff2712
+    // **p                       ->  Accede al primer elemento 'V'
+}
+
+void punteroDePunteroMal() { //Ejemplo tipo C
+    char* c = "Jh";
+    printf("&c   %p \n", &c);    // 1. 00000089025ffbd8
+    printf("c    %p \n", c);     // 2. 00007ff7feff2715
+    // *c                        ->  Accede al primer elemento 'J'
+
+    fooPunteroDePunteroMal(c);
+
+    printf("&c   %p \n", &c);    // 7. 00000089025ffbd8
+    printf("c    %p \n", c);     // 8. 00007ff7feff2715
+    // *c                        ->  Accede al primer elemento 'J'
+    std::cout << "Main:" << c << "\n";  // Jh
 }
 
 const std::string& menorPorReferencia(const std::string& x, const std::string& y) {
