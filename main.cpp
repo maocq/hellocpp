@@ -2189,80 +2189,78 @@ void estructuras() {
     imprimirUsuario(usuario);
 }
 
+class BoxC {
+public:
+    int val { 0 };
+};
 
-void fooReferenciaDePuntero(char*& p)  {
-    printf("&p    %p \n", &p);    // 3. 00000064409ff5d8
-    printf("p   %p \n", p);       // 4. 00007ff664b52715
-    // *p                         ->  Accede al primer elemento 'J'
-    p = "Vc";
+void fooReferenciaDePuntero(BoxC*& p)  {
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 3. 0x9ef9dff928
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 4. 0
 
-    printf("&p    %p \n", &p);   // 5. 00000064409ff5d8
-    printf("p   %p \n", p);      // 6. 00007ff664b52712
-    // *p                        ->  Accede al primer elemento 'V'
+    p = new BoxC { 9 }; //La memoria es liberada luego
+
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 5. 0x9ef9dff928
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 6. 0x22f2b391b80
 }
 
-void referenciaDePuntero() { //Ejemplo tipo C
-    char* c = "Jh";
-    printf("&c   %p \n", &c);    // 1. 00000064409ff5d8
-    printf("c    %p \n", c);     // 2. 00007ff664b52715
-    // *c                        ->  Accede al primer elemento 'J'
+void referenciaDePuntero() {
+    BoxC* c = { nullptr };
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 1. 0x9ef9dff928
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 2. 0
 
     fooReferenciaDePuntero(c);
 
-    printf("&c   %p \n", &c);    // 7. 00000064409ff5d8
-    printf("c    %p \n", c);     // 8. 00007ff664b52712
-    // *c                        ->  Accede al primer elemento 'V'
-    std::cout << "Main:" << c << "\n";  // Vc
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 7. 0x9ef9dff928
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0x22f2b391b80
+    std::cout << "Main:" << c->val << "\n";  // 9
+    delete c;
 }
 
-void fooPunteroDePuntero(char** p)  {
-    printf("p    %p \n", p);     // 3. 000000ab3d5ff708
-    printf("*p   %p \n", *p);    // 4. 00007ff6250f271f
-    // **p                       ->  Accede al primer elemento 'J'
-    *p = "Vc";
+void fooPunteroDePuntero(BoxC** p)  {
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 3. 0x1bdebff868
+    std::cout << "*p   " << static_cast<void*>(*p) << std::endl;    // 4. 0
 
-    printf("p    %p \n", p);     // 5. 000000ab3d5ff708
-    printf("*p   %p \n", *p);    // 6. 00007ff6250f271c
-    // **p                       ->  Accede al primer elemento 'V'
+    *p = new BoxC { 9 }; //La memoria es liberada luego
+
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 5. 0x1bdebff868
+    std::cout << "*p   " << static_cast<void*>(*p) << std::endl;    // 6. 0x1d975ae1b80
+
+    std::cout << "Foo:" << (*p)->val << std::endl;  // 9
 }
 
-void punteroDePuntero() { //Ejemplo tipo C
-    char* c = "Jh";
-    printf("&c   %p \n", &c);    // 1. 000000ab3d5ff708
-    printf("c    %p \n", c);     // 2. 00007ff6250f271f
-    // *c                        ->  Accede al primer elemento 'J'
+void punteroDePuntero() {
+    BoxC* c = { nullptr };
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 1. 0x1bdebff868
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 2. 0
 
     fooPunteroDePuntero(&c);
 
-    printf("&c   %p \n", &c);    // 7. 000000ab3d5ff708
-    printf("c    %p \n", c);     // 8. 00007ff6250f271c
-    // *c                        ->  Accede al primer elemento 'V'
-    std::cout << "Main:" << c << "\n";  // Vc
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 7. 0x1bdebff868
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0x1d975ae1b80
+    std::cout << "Main:" << c->val << "\n";  // 9
+    delete c;
 }
 
-void fooPunteroDePunteroMal(char* p)  {
-    printf("&p   %p \n", &p);    // 3. 00000089025ffbb0
-    printf("p    %p \n", p);     // 4. 00007ff7feff2715
-    // **p                       ->  Accede al primer elemento 'J'
-    p = "Vc";
+void fooPunteroDePunteroMal(BoxC* p)  { // Pasa por copia el puntero (Almacena copia del puntero en nueva variable p)
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 3. 0xc30a5ffc00
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 4. 0
 
-    printf("&p   %p \n", &p);    // 5. 00000089025ffbb0
-    printf("p    %p \n", p);     // 6. 00007ff7feff2712
-    // **p                       ->  Accede al primer elemento 'V'
+    p = new BoxC { 9 }; // Genera puntero colgante, se pierde la referencia en memoria
+
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 5. 0xc30a5ffc00
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 6. 0x28c030c1b80
 }
 
-void punteroDePunteroMal() { //Ejemplo tipo C
-    char* c = "Jh";
-    printf("&c   %p \n", &c);    // 1. 00000089025ffbd8
-    printf("c    %p \n", c);     // 2. 00007ff7feff2715
-    // *c                        ->  Accede al primer elemento 'J'
+void punteroDePunteroMal() {
+    BoxC* c = { nullptr };
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 1. 0xc30a5ffc28
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 2. 0
 
     fooPunteroDePunteroMal(c);
 
-    printf("&c   %p \n", &c);    // 7. 00000089025ffbd8
-    printf("c    %p \n", c);     // 8. 00007ff7feff2715
-    // *c                        ->  Accede al primer elemento 'J'
-    std::cout << "Main:" << c << "\n";  // Jh
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 7. 0xc30a5ffc28
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0
 }
 
 const std::string& menorPorReferencia(const std::string& x, const std::string& y) {
