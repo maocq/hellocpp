@@ -2217,6 +2217,27 @@ void referenciaDePuntero() {
     delete c;
 }
 
+void fooPunteroDePunteroMal(BoxC* p)  { // Pasa por copia el puntero (Almacena copia del puntero en nueva variable p)
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 3. 0xc30a5ffc00
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 4. 0
+
+    p = new BoxC { 9 }; // Genera puntero colgante, se pierde la referencia en memoria
+
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 5. 0xc30a5ffc00
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 6. 0x28c030c1b80
+}
+
+void punteroDePunteroMal() {
+    BoxC* c = { nullptr };
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 1. 0xc30a5ffc28
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 2. 0
+
+    fooPunteroDePunteroMal(c);
+
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 7. 0xc30a5ffc28
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0
+}
+
 void fooPunteroDePuntero(BoxC** p)  {
     std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 3. 0x1bdebff868
     std::cout << "*p   " << static_cast<void*>(*p) << std::endl;    // 4. 0
@@ -2240,27 +2261,6 @@ void punteroDePuntero() {
     std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0x1d975ae1b80
     std::cout << "Main:" << c->val << "\n";  // 9
     delete c;
-}
-
-void fooPunteroDePunteroMal(BoxC* p)  { // Pasa por copia el puntero (Almacena copia del puntero en nueva variable p)
-    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 3. 0xc30a5ffc00
-    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 4. 0
-
-    p = new BoxC { 9 }; // Genera puntero colgante, se pierde la referencia en memoria
-
-    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 5. 0xc30a5ffc00
-    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 6. 0x28c030c1b80
-}
-
-void punteroDePunteroMal() {
-    BoxC* c = { nullptr };
-    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 1. 0xc30a5ffc28
-    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 2. 0
-
-    fooPunteroDePunteroMal(c);
-
-    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 7. 0xc30a5ffc28
-    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0
 }
 
 const std::string& menorPorReferencia(const std::string& x, const std::string& y) {
