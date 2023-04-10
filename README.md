@@ -45,8 +45,105 @@
 
 
 int main() {
-    rangosProyecciones();
+    singletonPattern();
     return 0;
+}
+
+class Singleton {
+public:
+    static Singleton& instance() {
+        static Singleton instance_ { 0 };
+        return instance_;
+    }
+
+    void something(const std::string& msg) {
+        std::lock_guard<std::mutex> guard(lock_);
+        std::cout << "INFO: " << msg << count_ << std::endl;
+        ++count_;
+    }
+
+    size_t getCount() const {
+        return count_;
+    }
+
+private:
+    Singleton(size_t count = 0) : count_(count) {
+        std::cout << "Constructor " << count << std::endl;
+    }
+    ~Singleton() {}
+    Singleton(const Singleton&) = delete;            // Eliminación constructor por copia
+    Singleton& operator=(const Singleton&) = delete; // Eliminación operador de asignación por copia
+
+    std::mutex lock_;
+    size_t count_;
+};
+
+void singletonPattern() {
+    std::vector<std::thread> threads;
+    for (int i { 0 }; i < 1000; ++i)
+        threads.emplace_back(std::thread([]() {
+            Singleton::instance().something("Hello");
+        }));
+
+    for (auto& t : threads)
+        t.join();
+
+    std::cout << "Count: " << Singleton::instance().getCount() << std::endl;
+}
+
+template <typename T>
+T xmin(T a, T b) {
+    return a < b ? a : b;
+}
+template <typename T, typename... Args>
+T xmin(T a, Args... args) {
+    return xmin(a, xmin(args...));
+}
+
+void paqueteArgumentos() {
+    std::cout << "min(42.0, 7.5)=" << xmin(42.0, 7.5) << '\n';
+    std::cout << "min(1,5,3,-4,9)=" << xmin(1, 5, 3, -4, 9) << '\n';
+}
+
+void tuplas() {
+    std::tuple<std::string, int, std::string> t = std::make_tuple("hi", 9, "=)");
+    std::cout << std::get<0>(t) << ", " << std::get<1>(t) << ", " << std::get<2>(t) << std::endl;
+}
+
+template<typename T> using MyAlias = std::vector<T>;
+
+void templatesAlias() {
+    MyAlias<int> miVector;
+}
+
+template<typename T>
+constexpr T valor_predeterminado = T(0);
+
+template<>
+constexpr int valor_predeterminado<int> = 42;
+
+template<>
+constexpr char valor_predeterminado<char> = 'x';
+
+void templatesVariablesEspecializacion() {
+    int i {valor_predeterminado<int> };
+    char c = valor_predeterminado<char>;
+    double d = valor_predeterminado<double>;
+
+    std::cout << "valor_predeterminado<int> = " << i << std::endl;
+    std::cout << "valor_predeterminado<char> = " << c << std::endl;
+    std::cout << "valor_predeterminado<double> = " << d << std::endl;
+}
+
+template<typename T>
+constexpr T pi = T(3.1415926535897932385);
+
+void templatesVariables() {
+    double pi_double = pi<double>;
+    int pi_int = pi<int>;
+
+    std::cout << "pi (double) = " << pi_double << std::endl;
+    std::cout << "pi (int) = " << pi_int << std::endl;
 }
 
 class PersonaA {
@@ -1825,6 +1922,12 @@ void clases() {
     vehiculo.imprimir();
 }
 
+void lambdasEjemplos() {
+    auto lambdaRegular = [](int a, int b) { return a + b; };
+    auto lambdaGenerica = [](auto a, auto b) { return a + b; };
+    auto lambdaPlantilla = []<typename T, typename U>(T a, U b) { return a + b; };
+}
+
 void lambdasClausulaCaptura() {
     int buscar { 4 };
     auto x { [buscar](int n) { return n == buscar; } }; //Crea una variable clonada con el mismo valor
@@ -1859,6 +1962,45 @@ void lambdas() {
 
     std::cout << "end!" << std::endl;
 }
+
+/*
+// Expansión Lambda (https://cppinsights.io/)
+
+#include <iostream>
+
+int main() {
+  	int limit = 18;
+    auto validateLimit = [&](int n) -> bool { return n > limit; };
+    validateLimit(21);
+}
+
+// El compilador expande a:
+
+#include <iostream>
+
+int main() {
+  int limit = 18;
+
+  class __lambda_5_26 {
+  public:
+      inline bool operator()(int n) const {
+          return n > limit;
+      }
+
+  private:
+      int & limit;
+
+  public:
+      __lambda_5_26(int & _limit) : limit{_limit} {}
+  };
+
+  __lambda_5_26 validateLimit = __lambda_5_26{limit};
+
+  bool response = validateLimit(22);
+  //bool response = validateLimit.operator()(22);
+  return 0;
+}
+*/
 
 bool primeroMayor(int x, int y) {
     return x > y;
@@ -2049,6 +2191,80 @@ void estructuras() {
 
     std::cout << usuario.nombre << std::endl;
     imprimirUsuario(usuario);
+}
+
+class BoxC {
+public:
+    int val { 0 };
+};
+
+void fooReferenciaDePuntero(BoxC*& p)  {
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 3. 0x9ef9dff928
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 4. 0
+
+    p = new BoxC { 9 }; //La memoria es liberada luego
+
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 5. 0x9ef9dff928
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 6. 0x22f2b391b80
+}
+
+void referenciaDePuntero() {
+    BoxC* c = { nullptr };
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 1. 0x9ef9dff928
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 2. 0
+
+    fooReferenciaDePuntero(c);
+
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 7. 0x9ef9dff928
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0x22f2b391b80
+    std::cout << "Main:" << c->val << "\n";  // 9
+    delete c;
+}
+
+void fooPunteroDePunteroMal(BoxC* p)  { // Pasa por copia el puntero (Almacena copia del puntero en nueva variable p)
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 3. 0xc30a5ffc00
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 4. 0
+
+    p = new BoxC { 9 }; // Genera puntero colgante, se pierde la referencia en memoria
+
+    std::cout << "&p   " << static_cast<void*>(&p) << std::endl;    // 5. 0xc30a5ffc00
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 6. 0x28c030c1b80
+}
+
+void punteroDePunteroMal() {
+    BoxC* c = { nullptr };
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 1. 0xc30a5ffc28
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 2. 0
+
+    fooPunteroDePunteroMal(c);
+
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 7. 0xc30a5ffc28
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0
+}
+
+void fooPunteroDePuntero(BoxC** p)  {
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 3. 0x1bdebff868
+    std::cout << "*p   " << static_cast<void*>(*p) << std::endl;    // 4. 0
+
+    *p = new BoxC { 9 }; //La memoria es liberada luego
+
+    std::cout << "p    " << static_cast<void*>(p) << std::endl;     // 5. 0x1bdebff868
+    std::cout << "*p   " << static_cast<void*>(*p) << std::endl;    // 6. 0x1d975ae1b80
+
+    std::cout << "Foo:" << (*p)->val << std::endl;  // 9
+}
+
+void punteroDePuntero() {
+    BoxC* c = { nullptr };
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 1. 0x1bdebff868
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 2. 0
+
+    fooPunteroDePuntero(&c);
+
+    std::cout << "&c   " << static_cast<void*>(&c) << std::endl;    // 7. 0x1bdebff868
+    std::cout << "c    " << static_cast<void*>(c) << std::endl;     // 8. 0x1d975ae1b80
+    std::cout << "Main:" << c->val << "\n";  // 9
+    delete c;
 }
 
 const std::string& menorPorReferencia(const std::string& x, const std::string& y) {
