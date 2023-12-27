@@ -156,20 +156,24 @@ private:
 };
 
 void rangosProyecciones() {
+    /*
     std::vector personas{ PersonaA{"Vicente", "Velarte"}, PersonaA{"Rosa", "Velarte"}, PersonaA{"Juan", "Monero"}, PersonaA{"Juan", "Rendero"} };
     std::ranges::sort(personas, {}, [](const PersonaA& persona) { return std::pair{ persona.getNombre(), persona.getApellido() }; });
     //std::ranges::sort(personas, {}, &PersonaA::getNombre);
 
     for (const auto& persona : personas)
         std::cout << persona.getNombre() << ' ' << persona.getApellido() << '\n';
+    */
 }
 
 void rangos() { // Capa de abstracción sobre los iteradores
+    /*
     std::vector<int> datos{ 33, 11, 22 };
     std::ranges::sort(datos);        // Los elementos deben estar contiguos en memoria, no aplica para std::list
     for (const auto& i : datos) {
         std::cout << i << " ";
     }
+    */
 }
 
 void rangosContexto() {
@@ -304,6 +308,7 @@ void exclusionMutuaMutex() {
 }
 
 void punterosYReferenciasAtomicas() {
+    /*
     std::atomic<int*> p;
     std::vector<int> v(3, 0);
 
@@ -321,6 +326,7 @@ void punterosYReferenciasAtomicas() {
     int x = 0;
     std::atomic_ref<int> atomicRef { x };
     atomicRef = 10; // Asigna el valor de forma atómica
+    */
 }
 
 void aumentarValorAtomico(std::atomic<int>& contador) {
@@ -2093,12 +2099,14 @@ void stdVector() {
 
 //Arrays fijos
 void stdArray() {
+    /*
     std::array miArray {3, 2, 4};
     std::cout << miArray.at(1) << std::endl;
 
     std::sort(miArray.begin(), miArray.end());
     for (auto n : miArray)
         std::cout << n << std::endl;
+    */
 }
 
 void punterosVoid() {
